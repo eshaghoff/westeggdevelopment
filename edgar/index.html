@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Edgar</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* --- Password gate --- */
+#gate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #0d0d1a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.gate-box {
+  text-align: center;
+  padding: 40px;
+}
+.gate-box h1 {
+  color: #e8b931;
+  font-size: 28px;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.gate-box p {
+  color: #556;
+  font-size: 11px;
+  letter-spacing: 3px;
+  margin-bottom: 30px;
+}
+.gate-box input {
+  padding: 12px 20px;
+  border: 2px solid #333;
+  border-radius: 8px;
+  background: #1a1a2e;
+  color: #e8b931;
+  font-size: 16px;
+  text-align: center;
+  outline: none;
+  width: 240px;
+  font-family: inherit;
+  letter-spacing: 2px;
+}
+.gate-box input:focus { border-color: #e8b931; }
+.gate-box input::placeholder { color: #444; letter-spacing: 1px; }
+.gate-error {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 10px;
+  visibility: hidden;
+}
+
+/* --- Dashboard (hidden until auth) --- */
+#app { display: none; }
+
+body.authed #gate { display: none; }
+body.authed #app { display: block; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f4f4f8;
+  color: #333;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 700px;
+  margin: 20px auto;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 18px 28px;
+  text-align: center;
+}
+.header h1 {
+  color: #e8b931;
+  font-size: 22px;
+  letter-spacing: 1px;
+  margin: 0;
+}
+.header p {
+  color: #8899aa;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
+
+.date-bar {
+  background: #e8b931;
+  padding: 6px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.date-bar .date-text {
+  color: #1a1a2e;
+  font-weight: 700;
+  font-size: 12px;
+}
+.date-bar .last-synced {
+  color: #1a1a2e;
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.section { padding: 12px 28px 8px; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.section-badge {
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.section-badge.work { background: #e8b931; color: #1a1a2e; }
+.section-badge.personal { background: #4a90d9; color: #fff; }
+.section-count { color: #999; font-size: 12px; }
+
+.task-list { list-style: none; min-height: 20px; }
+.task-row {
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 6px;
+  margin-bottom: 2px;
+}
+.task-row:nth-child(odd) { background: #fafafa; }
+.task-row:hover { background: rgba(232, 185, 49, 0.07); }
+
+.task-rank {
+  color: #1a1a2e;
+  font-weight: 700;
+  font-size: 12px;
+  min-width: 22px;
+  text-align: right;
+  margin-right: 10px;
+}
+.task-info { flex: 1; min-width: 0; }
+.task-title {
+  font-size: 13px;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.task-meta {
+  display: flex;
+  gap: 6px;
+  margin-top: 1px;
+  align-items: center;
+}
+.task-summary {
+  font-size: 10px;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 350px;
+}
+.due-badge {
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.due-badge.overdue { background: #e74c3c; color: #fff; }
+.due-badge.today { background: #e8b931; color: #1a1a2e; }
+.due-badge.future { background: #eee; color: #666; }
+
+.priority-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.priority-dot.high { background: #e74c3c; }
+.priority-dot.med { background: #e8b931; }
+.priority-dot.low { background: #27ae60; }
+
+.footer {
+  background: #f8f8fa;
+  padding: 12px 28px;
+  text-align: center;
+  border-top: 1px solid #eee;
+}
+.footer p { color: #999; font-size: 11px; }
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 13px;
+}
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  color: #bbb;
+  font-size: 12px;
+}
+</style>
+</head>
+<body>
+
+<!-- Password Gate -->
+<div id="gate">
+  <div class="gate-box">
+    <h1>EDGAR</h1>
+    <p>EXECUTIVE ASSISTANT</p>
+    <input type="password" id="pw-input" placeholder="password" autofocus
+           onkeydown="if(event.key==='Enter') checkPassword()">
+    <div class="gate-error" id="gate-error">Incorrect password</div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="app">
+  <div class="container">
+    <div class="header">
+      <h1>EDGAR</h1>
+      <p>EXECUTIVE ASSISTANT</p>
+    </div>
+    <div class="date-bar">
+      <span class="date-text" id="date-text"></span>
+      <span class="last-synced" id="last-synced"></span>
+    </div>
+    <div id="content">
+      <div class="loading">Loading tasks...</div>
+    </div>
+    <div class="footer">
+      <p>Edgar — Your AI Executive Assistant</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- Password gate ---
+// SHA-256 hash of the password for client-side check
+const PASS_HASH = '8849853b957fe153b7056d0e7d65f99fb21070daf5122ddf1d7c942d4643c33d';
+
+async function sha256(text) {
+  const data = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function checkPassword() {
+  const input = document.getElementById('pw-input');
+  const hash = await sha256(input.value);
+  if (hash === PASS_HASH) {
+    sessionStorage.setItem('edgar_auth', '1');
+    document.body.classList.add('authed');
+    init();
+  } else {
+    document.getElementById('gate-error').style.visibility = 'visible';
+    input.value = '';
+    input.focus();
+  }
+}
+
+// Check session on load
+if (sessionStorage.getItem('edgar_auth') === '1') {
+  document.body.classList.add('authed');
+}
+
+// --- Dashboard ---
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function updateDate() {
+  const now = new Date();
+  const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('date-text').textContent = now.toLocaleDateString('en-US', opts);
+}
+
+function sortKey(t) {
+  if (t.urgency != null && t.importance != null)
+    return -(0.6 * t.urgency + 0.4 * t.importance);
+  return 0;
+}
+
+function priority(t) {
+  if (t.urgency != null && t.importance != null)
+    return Math.round((0.6 * t.urgency + 0.4 * t.importance) * 10) / 10;
+  return 0;
+}
+
+async function loadTodos() {
+  try {
+    const res = await fetch('todos.json?_=' + Date.now());
+    const data = await res.json();
+
+    const open = data.todos.filter(t => !t.done);
+    const work = open.filter(t => t.life_area === 'work');
+    const personal = open.filter(t => t.life_area === 'personal');
+    work.sort((a, b) => sortKey(a) - sortKey(b));
+    personal.sort((a, b) => sortKey(a) - sortKey(b));
+
+    renderContent(work, personal);
+
+    // Show last scored time
+    if (data.last_scored) {
+      const d = new Date(data.last_scored);
+      document.getElementById('last-synced').textContent =
+        'Synced: ' + d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    }
+  } catch (e) {
+    document.getElementById('content').innerHTML = '<div class="loading">Failed to load tasks.</div>';
+  }
+}
+
+function renderContent(work, personal) {
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  content.appendChild(renderSection('work', 'WORK', work));
+  content.appendChild(renderSection('personal', 'PERSONAL', personal));
+}
+
+function renderSection(type, label, tasks) {
+  const section = document.createElement('div');
+  section.className = 'section';
+
+  const header = document.createElement('div');
+  header.className = 'section-header';
+  header.innerHTML = `
+    <span class="section-badge ${type}">${label}</span>
+    <span class="section-count">${tasks.length} task${tasks.length !== 1 ? 's' : ''}</span>
+  `;
+  section.appendChild(header);
+
+  const list = document.createElement('ul');
+  list.className = 'task-list';
+
+  if (tasks.length === 0) {
+    list.innerHTML = '<div class="empty-state">No tasks</div>';
+  } else {
+    tasks.forEach((task, i) => {
+      list.appendChild(createTaskRow(task, i + 1));
+    });
+  }
+  section.appendChild(list);
+  return section;
+}
+
+function createTaskRow(task, rank) {
+  const row = document.createElement('li');
+  row.className = 'task-row';
+
+  let dueBadge = '';
+  if (task.due) {
+    const dueDate = new Date(task.due);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+    let cls = 'future';
+    if (dueDate < now) cls = 'overdue';
+    else if (dueDate < tomorrow) cls = 'today';
+    const fmt = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    dueBadge = `<span class="due-badge ${cls}">${cls === 'overdue' ? 'OVERDUE ' : ''}${fmt}</span>`;
+  }
+
+  const summary = task.ai_summary ? `<span class="task-summary">${escapeHtml(task.ai_summary)}</span>` : '';
+  const p = priority(task);
+  const dotClass = p >= 7 ? 'high' : p >= 4 ? 'med' : 'low';
+
+  row.innerHTML = `
+    <span class="task-rank">${rank}.</span>
+    <div class="task-info">
+      <div class="task-title">${escapeHtml(task.title)}</div>
+      <div class="task-meta">${dueBadge}${summary}</div>
+    </div>
+    <span class="priority-dot ${dotClass}" title="Priority: ${p}"></span>
+  `;
+  return row;
+}
+
+function init() {
+  updateDate();
+  loadTodos();
+  setInterval(loadTodos, 60000);
+}
+
+// Auto-init if already authed
+if (sessionStorage.getItem('edgar_auth') === '1') {
+  init();
+}
+</script>
+</body>
+</html>
