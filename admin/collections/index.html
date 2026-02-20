@@ -396,7 +396,7 @@ async function loadConfig() {
       }
     }
   } catch (e) {}
-  if (!API_URL) API_URL = 'http://127.0.0.1:5000';
+  if (!API_URL) API_URL = 'http://127.0.0.1:8000';
 }
 
 function $(id) { return document.getElementById(id); }
@@ -442,10 +442,13 @@ function leaseDaysBadge(dateStr) {
 }
 
 // --- Connection ---
+function authHeaders(extra = {}) {
+  return { 'X-Admin-Password': API_PASS, ...extra };
+}
+
 async function apiGet(path) {
-  // Collections uses session auth — send admin password as cookie
   const res = await fetch(API_URL + path, {
-    credentials: 'include',
+    headers: authHeaders(),
     signal: AbortSignal.timeout(5000),
   });
   return res;
@@ -454,34 +457,27 @@ async function apiGet(path) {
 async function apiPost(path, body) {
   const res = await fetch(API_URL + path, {
     method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(5000),
   });
   return res;
 }
 
-async function loginToApi() {
-  try {
-    // Collections uses session-based auth with form login
-    const formData = new URLSearchParams();
-    formData.append('password', API_PASS);
-    await fetch(API_URL + '/admin/login', {
-      method: 'POST',
-      credentials: 'include',
-      body: formData,
-      redirect: 'follow',
-    });
-    return true;
-  } catch (e) { return false; }
+async function apiPut(path, body) {
+  const res = await fetch(API_URL + path, {
+    method: 'PUT',
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(5000),
+  });
+  return res;
 }
 
 async function checkConnection() {
   const dot = $('conn-dot');
   const text = $('conn-text');
   try {
-    await loginToApi();
     const res = await apiGet('/api/collections-data?period=' + currentPeriod);
     if (res.ok) {
       apiOnline = true;
@@ -898,12 +894,9 @@ async function submitTenant() {
 
   try {
     const url = editId ? `/api/tenants/${editId}` : '/api/tenants';
-    const method = editId ? 'PUT' : 'POST';
-    const res = await fetch(API_URL + url, {
-      method, credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    const res = editId
+      ? await apiPut(url, body)
+      : await apiPost(url, body);
     const data = await res.json();
     if (data.ok) {
       showToast(editId ? 'Tenant updated!' : 'Tenant added!');
@@ -922,9 +915,7 @@ async function submitTenant() {
 async function deactivateTenant(id) {
   if (!apiOnline) { showToast('Offline'); return; }
   try {
-    const res = await fetch(API_URL + `/api/tenants/${id}/deactivate`, {
-      method: 'POST', credentials: 'include',
-    });
+    const res = await apiPost(`/api/tenants/${id}/deactivate`, {});
     const data = await res.json();
     if (data.ok) { showToast('Tenant deactivated'); loadData(); }
     else { showToast(data.error || 'Failed'); }
@@ -934,9 +925,7 @@ async function deactivateTenant(id) {
 async function activateTenant(id) {
   if (!apiOnline) { showToast('Offline'); return; }
   try {
-    const res = await fetch(API_URL + `/api/tenants/${id}/activate`, {
-      method: 'POST', credentials: 'include',
-    });
+    const res = await apiPost(`/api/tenants/${id}/activate`, {});
     const data = await res.json();
     if (data.ok) { showToast('Tenant activated'); loadData(); }
     else { showToast(data.error || 'Failed'); }
