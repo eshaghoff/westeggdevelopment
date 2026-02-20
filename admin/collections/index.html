@@ -10,187 +10,198 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #f4f4f8;
-  color: #333;
-  min-height: 100vh;
+  background: #f4f4f8; color: #333; min-height: 100vh;
 }
 
 .container {
-  max-width: 800px;
-  margin: 20px auto;
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  max-width: 860px; margin: 20px auto; background: #fff;
+  border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
 .header {
   background: linear-gradient(135deg, #1a2e1a 0%, #162e21 100%);
-  padding: 18px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding: 18px 28px; display: flex; align-items: center; justify-content: space-between;
 }
-.header-left {}
-.header h1 {
-  color: #27ae60;
-  font-size: 22px;
-  letter-spacing: 1px;
-  margin: 0;
-}
-.header p {
-  color: #6a9;
-  font-size: 11px;
-  letter-spacing: 2px;
-  margin-top: 4px;
-}
+.header h1 { color: #27ae60; font-size: 22px; letter-spacing: 1px; margin: 0; }
+.header p { color: #6a9; font-size: 11px; letter-spacing: 2px; margin-top: 4px; }
 .back-link {
-  color: #556;
-  text-decoration: none;
-  font-size: 12px;
-  letter-spacing: 1px;
-  transition: color 0.2s;
+  color: #556; text-decoration: none; font-size: 12px;
+  letter-spacing: 1px; transition: color 0.2s;
 }
 .back-link:hover { color: #27ae60; }
 
-/* Stats bar */
-.stats-bar {
-  background: #27ae60;
-  padding: 12px 28px;
-  display: flex;
-  gap: 0;
-  flex-wrap: wrap;
+/* Connection bar */
+.conn-bar {
+  padding: 4px 28px; font-size: 10px; display: flex;
+  align-items: center; justify-content: space-between;
+  background: #f0f0f4; border-bottom: 1px solid #eee;
 }
-.stat {
-  flex: 1;
-  min-width: 120px;
-  text-align: center;
-  padding: 4px 8px;
+.conn-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+.conn-dot.online { background: #27ae60; }
+.conn-dot.offline { background: #e74c3c; }
+.conn-status { color: #999; }
+.conn-config {
+  color: #aaa; font-size: 10px; cursor: pointer;
+  border: none; background: none; font-family: inherit;
 }
+.conn-config:hover { color: #27ae60; }
+
+/* Stats */
+.stats-bar { background: #27ae60; padding: 12px 28px; display: flex; gap: 0; flex-wrap: wrap; }
+.stat { flex: 1; min-width: 100px; text-align: center; padding: 4px 6px; }
 .stat:not(:last-child) { border-right: 1px solid rgba(255,255,255,0.2); }
-.stat-value {
-  color: #fff;
-  font-size: 18px;
-  font-weight: 700;
+.stat-value { color: #fff; font-size: 18px; font-weight: 700; }
+.stat-label { color: rgba(255,255,255,0.75); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+/* Vacant banner */
+.vacant-banner {
+  background: #fdf0f0; border-bottom: 2px solid #e74c3c;
+  padding: 10px 28px; display: none;
 }
-.stat-label {
-  color: rgba(255,255,255,0.75);
-  font-size: 9px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-top: 2px;
+.vacant-banner.show { display: block; }
+.vacant-title { color: #e74c3c; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 4px; }
+.vacant-item {
+  display: inline-block; background: #e74c3c; color: #fff;
+  padding: 3px 10px; border-radius: 4px; font-size: 11px;
+  font-weight: 600; margin: 2px 4px 2px 0;
 }
+
+/* Period selector */
+.period-bar {
+  padding: 8px 28px; border-bottom: 1px solid #eee;
+  display: flex; align-items: center; gap: 8px;
+}
+.period-bar label { font-size: 11px; color: #666; font-weight: 600; }
+.period-bar input[type="month"] {
+  padding: 4px 10px; border: 1.5px solid #ddd; border-radius: 6px;
+  font-size: 12px; font-family: inherit; outline: none;
+}
+.period-bar input[type="month"]:focus { border-color: #27ae60; }
+.period-nav {
+  border: none; background: none; font-size: 16px; cursor: pointer;
+  color: #666; padding: 2px 6px; border-radius: 4px;
+}
+.period-nav:hover { background: #eee; }
 
 /* Tabs */
-.tabs {
-  display: flex;
-  border-bottom: 1px solid #eee;
-  padding: 0 28px;
-}
+.tabs { display: flex; border-bottom: 1px solid #eee; padding: 0 28px; }
 .tab {
-  padding: 10px 16px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #999;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
-  letter-spacing: 0.5px;
+  padding: 10px 16px; font-size: 12px; font-weight: 600; color: #999;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s; letter-spacing: 0.5px;
 }
 .tab:hover { color: #555; }
-.tab.active {
-  color: #27ae60;
-  border-bottom-color: #27ae60;
-}
+.tab.active { color: #27ae60; border-bottom-color: #27ae60; }
 
-/* Tab content */
 .tab-content { display: none; padding: 16px 28px; }
 .tab-content.active { display: block; }
 
-/* Deal filter */
-.filter-bar {
-  padding: 8px 0 12px;
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
+/* Filter */
+.filter-bar { padding: 8px 0 12px; display: flex; gap: 6px; flex-wrap: wrap; }
 .filter-btn {
-  padding: 4px 12px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  background: #fff;
-  font-size: 11px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: inherit;
+  padding: 4px 12px; border-radius: 12px; border: 1px solid #ddd;
+  background: #fff; font-size: 11px; cursor: pointer;
+  transition: all 0.2s; font-family: inherit;
 }
 .filter-btn:hover { border-color: #27ae60; }
-.filter-btn.active {
-  background: #27ae60;
-  color: #fff;
-  border-color: #27ae60;
-}
+.filter-btn.active { background: #27ae60; color: #fff; border-color: #27ae60; }
 
 /* Tables */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
 th {
-  text-align: left;
-  padding: 6px 8px;
-  font-size: 10px;
-  letter-spacing: 0.5px;
-  color: #999;
-  text-transform: uppercase;
+  text-align: left; padding: 6px 8px; font-size: 10px;
+  letter-spacing: 0.5px; color: #999; text-transform: uppercase;
   border-bottom: 1px solid #eee;
 }
-td {
-  padding: 8px 8px;
-  border-bottom: 1px solid #f5f5f5;
-  vertical-align: top;
-}
+td { padding: 8px 8px; border-bottom: 1px solid #f5f5f5; vertical-align: top; }
 tr:hover td { background: rgba(39, 174, 96, 0.04); }
 
 .status-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 3px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  display: inline-block; padding: 2px 8px; border-radius: 3px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.3px;
 }
 .status-badge.paid { background: #d4edda; color: #155724; }
 .status-badge.pending { background: #fff3cd; color: #856404; }
-.status-badge.overdue { background: #f8d7da; color: #721c24; }
+.status-badge.overdue, .status-badge.late { background: #f8d7da; color: #721c24; }
 .status-badge.partial { background: #cce5ff; color: #004085; }
 
 .amount { font-variant-numeric: tabular-nums; }
 .amount.positive { color: #27ae60; }
 .amount.negative { color: #e74c3c; }
 
-/* Footer */
-.footer {
-  background: #f8f8fa;
-  padding: 10px 28px;
-  text-align: center;
-  border-top: 1px solid #eee;
+/* Lease days */
+.lease-days { font-size: 10px; font-weight: 600; white-space: nowrap; }
+.lease-days.expired { color: #721c24; background: #f8d7da; padding: 1px 6px; border-radius: 3px; }
+.lease-days.critical { color: #e74c3c; }
+.lease-days.warning { color: #e67e22; }
+.lease-days.ok { color: #27ae60; }
+
+/* Add payment form */
+.add-payment-form {
+  background: #f8fdf8; border: 1px solid #d4edda; border-radius: 8px;
+  padding: 16px; margin-bottom: 16px;
 }
+.add-payment-form h4 { font-size: 12px; color: #1a2e1a; margin-bottom: 10px; letter-spacing: 0.5px; }
+.form-row { display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+.form-group { display: flex; flex-direction: column; flex: 1; min-width: 120px; }
+.form-group label { font-size: 10px; color: #666; margin-bottom: 2px; font-weight: 600; }
+.form-group input, .form-group select {
+  padding: 6px 10px; border: 1.5px solid #ddd; border-radius: 6px;
+  font-size: 12px; font-family: inherit; outline: none;
+}
+.form-group input:focus, .form-group select:focus { border-color: #27ae60; }
+.pay-btn {
+  background: #27ae60; color: #fff; border: none; padding: 8px 20px;
+  border-radius: 6px; font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: inherit; margin-top: 4px;
+}
+.pay-btn:hover { opacity: 0.85; }
+.pay-btn:disabled { opacity: 0.5; cursor: default; }
+
+/* Footer */
+.footer { background: #f8f8fa; padding: 10px 28px; text-align: center; border-top: 1px solid #eee; }
 .footer p { color: #bbb; font-size: 10px; }
 
-.loading {
-  text-align: center;
-  padding: 40px;
-  color: #999;
-  font-size: 13px;
-}
+.loading { text-align: center; padding: 40px; color: #999; font-size: 13px; }
 
-.lease-warn {
-  color: #e74c3c;
-  font-size: 9px;
-  font-weight: 600;
+/* Toast */
+.toast {
+  position: fixed; top: 16px; right: 16px;
+  background: #1a2e1a; color: #27ae60;
+  padding: 10px 20px; border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  opacity: 0; transform: translateY(-10px);
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000; pointer-events: none;
 }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* Config modal */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: #fff; border-radius: 12px; padding: 24px;
+  max-width: 420px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.modal h3 { font-size: 14px; margin-bottom: 12px; color: #1a2e1a; }
+.modal label { font-size: 11px; color: #666; display: block; margin-bottom: 4px; }
+.modal input {
+  width: 100%; padding: 8px 12px; border: 1.5px solid #ddd;
+  border-radius: 6px; font-size: 12px; font-family: inherit;
+  outline: none; margin-bottom: 12px;
+}
+.modal input:focus { border-color: #27ae60; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.modal-actions button {
+  padding: 6px 16px; border-radius: 6px; font-size: 12px;
+  font-weight: 600; cursor: pointer; font-family: inherit;
+  border: 1px solid #ddd; background: #fff; color: #333;
+}
+.modal-actions .save-btn { background: #27ae60; color: #fff; border-color: #27ae60; }
 </style>
 </head>
 <body>
@@ -203,30 +214,35 @@ tr:hover td { background: rgba(39, 174, 96, 0.04); }
     <a class="back-link" href="../">&larr; ADMIN</a>
   </div>
 
-  <div class="stats-bar" id="stats-bar">
-    <div class="stat">
-      <div class="stat-value" id="s-deals">-</div>
-      <div class="stat-label">Properties</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="s-tenants">-</div>
-      <div class="stat-label">Tenants</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="s-collected">-</div>
-      <div class="stat-label">Collected</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="s-outstanding">-</div>
-      <div class="stat-label">Outstanding</div>
-    </div>
+  <div class="conn-bar">
+    <span class="conn-status"><span class="conn-dot" id="conn-dot"></span><span id="conn-text">Checking...</span></span>
+    <button class="conn-config" onclick="openConfig()">configure</button>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-value" id="s-deals">-</div><div class="stat-label">Properties</div></div>
+    <div class="stat"><div class="stat-value" id="s-tenants">-</div><div class="stat-label">Tenants</div></div>
+    <div class="stat"><div class="stat-value" id="s-rate">-</div><div class="stat-label">Collected</div></div>
+    <div class="stat"><div class="stat-value" id="s-collected">-</div><div class="stat-label">This Period</div></div>
+    <div class="stat"><div class="stat-value" id="s-outstanding">-</div><div class="stat-label">Outstanding</div></div>
+  </div>
+
+  <div class="vacant-banner" id="vacant-banner">
+    <div class="vacant-title">VACANT UNITS</div>
+    <div id="vacant-list"></div>
+  </div>
+
+  <div class="period-bar">
+    <button class="period-nav" onclick="shiftPeriod(-1)">&larr;</button>
+    <label>Period:</label>
+    <input type="month" id="period-input" onchange="onPeriodChange()">
+    <button class="period-nav" onclick="shiftPeriod(1)">&rarr;</button>
   </div>
 
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('rent-roll')">Rent Roll</div>
-    <div class="tab" onclick="switchTab('charges')">Charges</div>
-    <div class="tab" onclick="switchTab('payments')">Payments</div>
-    <div class="tab" onclick="switchTab('leases')">Leases</div>
+    <div class="tab active" data-tab="rent-roll" onclick="switchTab('rent-roll', this)">Rent Roll</div>
+    <div class="tab" data-tab="charges" onclick="switchTab('charges', this)">Charges</div>
+    <div class="tab" data-tab="payments" onclick="switchTab('payments', this)">Payments</div>
   </div>
 
   <div class="tab-content active" id="tab-rent-roll">
@@ -239,21 +255,84 @@ tr:hover td { background: rgba(39, 174, 96, 0.04); }
   </div>
 
   <div class="tab-content" id="tab-payments">
+    <div class="add-payment-form" id="payment-form" style="display:none">
+      <h4>RECORD PAYMENT</h4>
+      <div class="form-row">
+        <div class="form-group" style="flex:2">
+          <label>Tenant</label>
+          <select id="pay-tenant" onchange="onPayTenantChange()"><option value="">Select...</option></select>
+        </div>
+        <div class="form-group" style="flex:2">
+          <label>Charge</label>
+          <select id="pay-charge"><option value="">Select tenant first</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Amount</label>
+          <input type="number" id="pay-amount" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label>Method</label>
+          <select id="pay-method">
+            <option value="ach">ACH</option>
+            <option value="check">Check</option>
+            <option value="zelle">Zelle</option>
+            <option value="venmo">Venmo</option>
+            <option value="paypal">PayPal</option>
+            <option value="wire">Wire</option>
+            <option value="cash">Cash</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="pay-date">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Reference #</label>
+          <input type="text" id="pay-ref" placeholder="Check #, txn ID...">
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <input type="text" id="pay-notes" placeholder="Optional">
+        </div>
+      </div>
+      <button class="pay-btn" id="pay-btn" onclick="submitPayment()">Record Payment</button>
+    </div>
     <div id="payments-table"><div class="loading">Loading...</div></div>
   </div>
 
-  <div class="tab-content" id="tab-leases">
-    <div id="leases-table"><div class="loading">Loading...</div></div>
-  </div>
+  <div class="footer"><p id="sync-time">Loading...</p></div>
+</div>
 
-  <div class="footer">
-    <p id="sync-time">Loading...</p>
+<div class="toast" id="toast"></div>
+
+<!-- Config modal -->
+<div class="modal-overlay" id="config-modal">
+  <div class="modal">
+    <h3>API Connection</h3>
+    <label>Collections API URL</label>
+    <input type="text" id="cfg-api-url" placeholder="http://localhost:5000">
+    <label>Admin Password</label>
+    <input type="password" id="cfg-pass">
+    <div class="modal-actions">
+      <button onclick="closeConfig()">Cancel</button>
+      <button class="save-btn" onclick="saveConfig()">Save & Test</button>
+    </div>
   </div>
 </div>
 
 <script>
+// --- Config ---
+let API_URL = localStorage.getItem('collections_api_url') || 'http://127.0.0.1:5000';
+let API_PASS = localStorage.getItem('collections_api_pass') || 'admin';
+let apiOnline = false;
 let DATA = null;
 let activeDeal = 'all';
+let currentPeriod = new Date().toISOString().slice(0, 7);
 
 function $(id) { return document.getElementById(id); }
 function fmt(n) { return '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
@@ -266,33 +345,192 @@ function formatPeriod(p) {
   return months[parseInt(m) - 1] + ' ' + y;
 }
 
-function statusBadge(status) {
-  return `<span class="status-badge ${status}">${status.toUpperCase()}</span>`;
+function statusBadge(st) { return `<span class="status-badge ${st}">${st.toUpperCase()}</span>`; }
+
+function showToast(msg, dur = 3000) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
 }
 
-// Tabs
-function switchTab(name) {
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const exp = new Date(dateStr + 'T00:00:00');
+  const now = new Date(); now.setHours(0,0,0,0);
+  return Math.round((exp - now) / 86400000);
+}
+
+function leaseDaysBadge(dateStr) {
+  const days = daysUntil(dateStr);
+  if (days === null) return '<span style="color:#bbb">-</span>';
+  let cls = 'ok';
+  let text = `${days}d`;
+  if (days < 0) { cls = 'expired'; text = `${Math.abs(days)}d ago`; }
+  else if (days <= 30) { cls = 'critical'; }
+  else if (days <= 90) { cls = 'warning'; }
+  return `<span class="lease-days ${cls}">${text}</span>`;
+}
+
+// --- Connection ---
+async function apiGet(path) {
+  // Collections uses session auth — send admin password as cookie
+  const res = await fetch(API_URL + path, {
+    credentials: 'include',
+    signal: AbortSignal.timeout(5000),
+  });
+  return res;
+}
+
+async function apiPost(path, body) {
+  const res = await fetch(API_URL + path, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(5000),
+  });
+  return res;
+}
+
+async function loginToApi() {
+  try {
+    // Collections uses session-based auth with form login
+    const formData = new URLSearchParams();
+    formData.append('password', API_PASS);
+    await fetch(API_URL + '/admin/login', {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+      redirect: 'follow',
+    });
+    return true;
+  } catch (e) { return false; }
+}
+
+async function checkConnection() {
+  const dot = $('conn-dot');
+  const text = $('conn-text');
+  try {
+    await loginToApi();
+    const res = await apiGet('/api/collections-data?period=' + currentPeriod);
+    if (res.ok) {
+      apiOnline = true;
+      dot.className = 'conn-dot online';
+      text.textContent = 'Connected';
+      $('payment-form').style.display = 'block';
+      return true;
+    }
+  } catch (e) {}
+  apiOnline = false;
+  dot.className = 'conn-dot offline';
+  text.textContent = 'Offline — read only';
+  $('payment-form').style.display = 'none';
+  return false;
+}
+
+function openConfig() {
+  $('cfg-api-url').value = API_URL;
+  $('cfg-pass').value = API_PASS;
+  $('config-modal').classList.add('show');
+}
+function closeConfig() { $('config-modal').classList.remove('show'); }
+
+async function saveConfig() {
+  API_URL = $('cfg-api-url').value.replace(/\/+$/, '');
+  API_PASS = $('cfg-pass').value;
+  localStorage.setItem('collections_api_url', API_URL);
+  localStorage.setItem('collections_api_pass', API_PASS);
+  const ok = await checkConnection();
+  if (ok) { showToast('Connected!'); closeConfig(); loadData(); }
+  else { showToast('Connection failed'); }
+}
+
+// --- Tabs ---
+function switchTab(name, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelector(`.tab-content#tab-${name}`).classList.add('active');
-  event.target.classList.add('active');
+  $(`tab-${name}`).classList.add('active');
+  el.classList.add('active');
 }
 
-// Deal filter
+// --- Period navigation ---
+function onPeriodChange() {
+  currentPeriod = $('period-input').value;
+  loadData();
+}
+
+function shiftPeriod(dir) {
+  const [y, m] = currentPeriod.split('-').map(Number);
+  const d = new Date(y, m - 1 + dir, 1);
+  currentPeriod = d.toISOString().slice(0, 7);
+  $('period-input').value = currentPeriod;
+  loadData();
+}
+
+// --- Deal filter ---
 function setDealFilter(deal) {
   activeDeal = deal;
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.deal === deal);
-  });
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.deal === deal));
   renderRentRoll();
 }
 
-// Render functions
+// --- Data loading ---
+async function loadData() {
+  if (apiOnline) {
+    try {
+      const res = await apiGet('/api/collections-data?period=' + currentPeriod);
+      if (res.ok) {
+        DATA = await res.json();
+        renderAll();
+        return;
+      }
+    } catch (e) { apiOnline = false; }
+  }
+  // Fallback to static JSON
+  try {
+    const res = await fetch('data.json?_=' + Date.now());
+    DATA = await res.json();
+    renderAll();
+  } catch (e) {
+    document.querySelectorAll('.tab-content').forEach(t => {
+      t.innerHTML = '<div class="loading">Failed to load data.</div>';
+    });
+  }
+}
+
+function renderAll() {
+  renderStats(DATA.summary);
+  renderVacant(DATA.vacant || []);
+  renderDealFilter(DATA.deals);
+  renderRentRoll();
+  renderCharges();
+  renderPayments();
+  populatePaymentForm();
+
+  const d = new Date(DATA.exported_at);
+  $('sync-time').textContent = (apiOnline ? 'Live: ' : 'Synced: ') + d.toLocaleString('en-US', {
+    month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+  });
+}
+
 function renderStats(s) {
   $('s-deals').textContent = s.deals;
   $('s-tenants').textContent = s.active_tenants;
+  const rate = s.due_this_period > 0 ? Math.round(s.collected_this_period / s.due_this_period * 100) : 0;
+  $('s-rate').textContent = rate + '%';
   $('s-collected').textContent = fmt(s.collected_this_period);
   $('s-outstanding').textContent = fmt(s.outstanding_balance);
+}
+
+function renderVacant(vacant) {
+  const banner = $('vacant-banner');
+  if (!vacant || vacant.length === 0) {
+    banner.classList.remove('show');
+    return;
+  }
+  banner.classList.add('show');
+  $('vacant-list').innerHTML = vacant.map(v =>
+    `<span class="vacant-item">${escapeHtml(v.deal_name || v.name)} ${escapeHtml(v.unit)}</span>`
+  ).join('');
 }
 
 function renderDealFilter(deals) {
@@ -317,7 +555,7 @@ function renderRentRoll() {
     return;
   }
 
-  let html = '<table><tr><th>Property</th><th>Unit</th><th>Tenant</th><th>Rent</th><th>Due Day</th></tr>';
+  let html = '<table><tr><th>Property</th><th>Unit</th><th>Tenant</th><th>Rent</th><th>Due</th><th>LXP</th><th>Days</th></tr>';
   tenants.forEach(t => {
     html += `<tr>
       <td>${escapeHtml(t.deal)}</td>
@@ -325,6 +563,8 @@ function renderRentRoll() {
       <td>${escapeHtml(t.name)}</td>
       <td class="amount">${fmt(t.rent)}</td>
       <td>${t.due_day}</td>
+      <td style="font-size:11px">${t.lease_expiration || '<span style="color:#bbb">-</span>'}</td>
+      <td>${leaseDaysBadge(t.lease_expiration)}</td>
     </tr>`;
   });
   html += '</table>';
@@ -332,22 +572,23 @@ function renderRentRoll() {
 }
 
 function renderCharges() {
-  const charges = DATA.charges;
+  // Filter to current period
+  const charges = DATA.charges.filter(c => c.period === currentPeriod);
   if (charges.length === 0) {
-    $('charges-table').innerHTML = '<div class="loading">No charges</div>';
+    $('charges-table').innerHTML = `<div class="loading">No charges for ${formatPeriod(currentPeriod)}</div>`;
     return;
   }
 
-  let html = '<table><tr><th>Period</th><th>Property</th><th>Unit</th><th>Tenant</th><th>Due</th><th>Paid</th><th>Status</th></tr>';
+  let html = '<table><tr><th>Property</th><th>Unit</th><th>Tenant</th><th>Due</th><th>Paid</th><th>Remaining</th><th>Status</th></tr>';
   charges.forEach(c => {
-    const remaining = c.due - c.paid;
+    const remaining = c.due + (c.late_fee || 0) - c.paid;
     html += `<tr>
-      <td>${formatPeriod(c.period)}</td>
       <td>${escapeHtml(c.deal)}</td>
       <td>${escapeHtml(c.unit)}</td>
       <td>${escapeHtml(c.tenant)}</td>
-      <td class="amount">${fmt(c.due)}</td>
+      <td class="amount">${fmt(c.due)}${c.late_fee ? ' <span style="color:#e74c3c;font-size:10px">+' + fmt(c.late_fee) + ' late</span>' : ''}</td>
       <td class="amount ${c.paid > 0 ? 'positive' : ''}">${fmt(c.paid)}</td>
+      <td class="amount ${remaining > 0 ? 'negative' : 'positive'}">${remaining > 0 ? fmt(remaining) : '$0'}</td>
       <td>${statusBadge(c.status)}</td>
     </tr>`;
   });
@@ -362,7 +603,7 @@ function renderPayments() {
     return;
   }
 
-  let html = '<table><tr><th>Date</th><th>Property</th><th>Unit</th><th>Tenant</th><th>Amount</th><th>Method</th></tr>';
+  let html = '<table><tr><th>Date</th><th>Property</th><th>Unit</th><th>Tenant</th><th>Amount</th><th>Method</th><th>Notes</th></tr>';
   payments.forEach(p => {
     html += `<tr>
       <td>${escapeHtml(p.date)}</td>
@@ -371,66 +612,121 @@ function renderPayments() {
       <td>${escapeHtml(p.tenant)}</td>
       <td class="amount positive">${fmt(p.amount)}</td>
       <td>${escapeHtml(p.method)}</td>
+      <td style="font-size:11px;color:#999">${escapeHtml(p.notes || '')}</td>
     </tr>`;
   });
   html += '</table>';
   $('payments-table').innerHTML = html;
 }
 
-function renderLeases() {
-  const tenants = DATA.tenants.filter(t => t.active && t.lease_expiration);
-  tenants.sort((a, b) => (a.lease_expiration || '').localeCompare(b.lease_expiration || ''));
+// --- Payment form ---
+function populatePaymentForm() {
+  const sel = $('pay-tenant');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Select tenant...</option>';
+  DATA.tenants.filter(t => t.active).forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = `${t.name} — ${t.deal} ${t.unit}`;
+    sel.appendChild(opt);
+  });
+  if (current) sel.value = current;
 
-  if (tenants.length === 0) {
-    $('leases-table').innerHTML = '<div class="loading">No lease data</div>';
+  // Default date to today
+  if (!$('pay-date').value) {
+    $('pay-date').value = new Date().toISOString().slice(0, 10);
+  }
+}
+
+function onPayTenantChange() {
+  const tid = parseInt($('pay-tenant').value);
+  const sel = $('pay-charge');
+  sel.innerHTML = '';
+
+  if (!tid) {
+    sel.innerHTML = '<option value="">Select tenant first</option>';
     return;
   }
 
-  const now = new Date();
-  const threeMonths = new Date(now); threeMonths.setMonth(threeMonths.getMonth() + 3);
+  const charges = DATA.charges.filter(c => c.tenant_id === tid && c.status !== 'paid');
+  if (charges.length === 0) {
+    sel.innerHTML = '<option value="">No outstanding charges</option>';
+    return;
+  }
 
-  let html = '<table><tr><th>Property</th><th>Unit</th><th>Tenant</th><th>Lease Expires</th><th>Rent</th></tr>';
-  tenants.forEach(t => {
-    const exp = new Date(t.lease_expiration);
-    const warn = exp <= threeMonths;
-    html += `<tr>
-      <td>${escapeHtml(t.deal)}</td>
-      <td>${escapeHtml(t.unit)}</td>
-      <td>${escapeHtml(t.name)}</td>
-      <td>${escapeHtml(t.lease_expiration)} ${warn ? '<span class="lease-warn">EXPIRING SOON</span>' : ''}</td>
-      <td class="amount">${fmt(t.rent)}</td>
-    </tr>`;
+  charges.forEach(c => {
+    const remaining = c.due + (c.late_fee || 0) - c.paid;
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = `${formatPeriod(c.period)} — ${fmt(remaining)} remaining`;
+    sel.appendChild(opt);
   });
-  html += '</table>';
-  $('leases-table').innerHTML = html;
-}
 
-// Load data
-async function loadData() {
-  try {
-    const res = await fetch('data.json?_=' + Date.now());
-    DATA = await res.json();
-
-    renderStats(DATA.summary);
-    renderDealFilter(DATA.deals);
-    renderRentRoll();
-    renderCharges();
-    renderPayments();
-    renderLeases();
-
-    const d = new Date(DATA.exported_at);
-    $('sync-time').textContent = 'Last synced: ' + d.toLocaleString('en-US', {
-      month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
-    });
-  } catch (e) {
-    document.querySelectorAll('.tab-content').forEach(t => {
-      t.innerHTML = '<div class="loading">Failed to load data.</div>';
-    });
+  // Auto-fill amount
+  if (charges.length > 0) {
+    const first = charges[0];
+    $('pay-amount').value = (first.due + (first.late_fee || 0) - first.paid).toFixed(2);
   }
 }
 
-loadData();
-setInterval(loadData, 120000);
+async function submitPayment() {
+  if (!apiOnline) { showToast('Offline — cannot record payment'); return; }
+
+  const tenantId = $('pay-tenant').value;
+  const chargeId = $('pay-charge').value;
+  const amount = parseFloat($('pay-amount').value);
+  const method = $('pay-method').value;
+  const payDate = $('pay-date').value;
+  const reference = $('pay-ref').value;
+  const notes = $('pay-notes').value;
+
+  if (!tenantId || !chargeId || !amount) {
+    showToast('Fill in tenant, charge, and amount');
+    return;
+  }
+
+  const btn = $('pay-btn');
+  btn.textContent = 'Recording...';
+  btn.disabled = true;
+
+  try {
+    const res = await apiPost('/api/record-payment', {
+      tenant_id: parseInt(tenantId),
+      charge_id: parseInt(chargeId),
+      amount, method,
+      payment_date: payDate,
+      reference, notes,
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast('Payment recorded!');
+      // Reset form
+      $('pay-tenant').value = '';
+      $('pay-charge').innerHTML = '<option value="">Select tenant first</option>';
+      $('pay-amount').value = '';
+      $('pay-ref').value = '';
+      $('pay-notes').value = '';
+      // Reload data
+      loadData();
+    } else {
+      showToast(data.error || 'Failed to record payment');
+    }
+  } catch (e) {
+    showToast('Failed: ' + e.message);
+  } finally {
+    btn.textContent = 'Record Payment';
+    btn.disabled = false;
+  }
+}
+
+// --- Init ---
+$('period-input').value = currentPeriod;
+
+(async () => {
+  await checkConnection();
+  loadData();
+})();
+setInterval(loadData, 60000);
 </script>
 </body>
 </html>

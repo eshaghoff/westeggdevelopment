@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Edgar — Executive Assistant</title>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -31,147 +32,175 @@ body {
   align-items: center;
   justify-content: space-between;
 }
-.header-left { text-align: left; }
-.header h1 {
-  color: #e8b931;
-  font-size: 22px;
-  letter-spacing: 1px;
-  margin: 0;
-}
-.header p {
-  color: #8899aa;
-  font-size: 11px;
-  letter-spacing: 2px;
-  margin-top: 4px;
-}
+.header-left {}
+.header h1 { color: #e8b931; font-size: 22px; letter-spacing: 1px; margin: 0; }
+.header p { color: #8899aa; font-size: 11px; letter-spacing: 2px; margin-top: 4px; }
 .back-link {
-  color: #556;
-  text-decoration: none;
-  font-size: 12px;
-  letter-spacing: 1px;
-  transition: color 0.2s;
+  color: #556; text-decoration: none; font-size: 12px;
+  letter-spacing: 1px; transition: color 0.2s;
 }
 .back-link:hover { color: #e8b931; }
 
 .date-bar {
-  background: #e8b931;
-  padding: 6px 28px;
+  background: #e8b931; padding: 6px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.date-bar .date-text { color: #1a1a2e; font-weight: 700; font-size: 12px; }
+.date-bar .last-synced { color: #1a1a2e; font-size: 10px; opacity: 0.7; }
+
+/* Connection status */
+.conn-bar {
+  padding: 4px 28px;
+  font-size: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: #f0f0f4;
+  border-bottom: 1px solid #eee;
 }
-.date-bar .date-text {
-  color: #1a1a2e;
-  font-weight: 700;
-  font-size: 12px;
+.conn-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  display: inline-block; margin-right: 4px;
 }
-.date-bar .last-synced {
-  color: #1a1a2e;
-  font-size: 10px;
-  opacity: 0.7;
+.conn-dot.online { background: #27ae60; }
+.conn-dot.offline { background: #e74c3c; }
+.conn-status { color: #999; }
+.conn-config {
+  color: #aaa; font-size: 10px; cursor: pointer;
+  border: none; background: none; font-family: inherit;
 }
+.conn-config:hover { color: #e8b931; }
 
-.section { padding: 12px 28px 8px; }
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
+/* Add bar */
+.add-bar {
+  padding: 14px 28px; display: flex; gap: 8px;
+  border-bottom: 1px solid #eee;
 }
+.add-bar input {
+  flex: 1; padding: 9px 14px; border: 1.5px solid #ddd;
+  border-radius: 8px; font-size: 13px; font-family: inherit;
+  outline: none; transition: border-color 0.2s;
+}
+.add-bar input:focus { border-color: #e8b931; }
+.add-bar input::placeholder { color: #aaa; }
+.add-btn {
+  background: #e8b931; color: #1a1a2e; border: none;
+  padding: 9px 18px; border-radius: 8px; font-size: 13px;
+  font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+  white-space: nowrap;
+}
+.add-btn:hover { opacity: 0.85; }
+.add-btn:disabled { opacity: 0.5; cursor: default; }
+
+/* Sections */
+.section { padding: 12px 28px 8px; }
+.section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .section-badge {
-  padding: 2px 10px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  padding: 2px 10px; border-radius: 4px; font-size: 11px;
+  font-weight: 700; letter-spacing: 0.5px;
 }
 .section-badge.work { background: #e8b931; color: #1a1a2e; }
 .section-badge.personal { background: #4a90d9; color: #fff; }
 .section-count { color: #999; font-size: 12px; }
 
-.task-list { list-style: none; min-height: 20px; }
+/* Task list */
+.task-list { list-style: none; min-height: 30px; }
 .task-row {
-  display: flex;
-  align-items: center;
-  padding: 7px 10px;
-  border-radius: 6px;
-  margin-bottom: 2px;
+  display: flex; align-items: center; padding: 7px 10px;
+  border-radius: 6px; margin-bottom: 2px;
+  transition: background 0.15s, transform 0.2s, opacity 0.3s;
 }
 .task-row:nth-child(odd) { background: #fafafa; }
 .task-row:hover { background: rgba(232, 185, 49, 0.07); }
 
+.drag-handle {
+  cursor: grab; color: #ccc; font-size: 14px;
+  padding: 0 8px 0 0; user-select: none; line-height: 1;
+}
+.drag-handle:active { cursor: grabbing; }
+
 .task-rank {
-  color: #1a1a2e;
-  font-weight: 700;
-  font-size: 12px;
-  min-width: 22px;
-  text-align: right;
-  margin-right: 10px;
+  color: #1a1a2e; font-weight: 700; font-size: 12px;
+  min-width: 22px; text-align: right; margin-right: 10px;
 }
 .task-info { flex: 1; min-width: 0; }
 .task-title {
-  font-size: 13px;
-  color: #222;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 13px; color: #222;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.task-meta {
-  display: flex;
-  gap: 6px;
-  margin-top: 1px;
-  align-items: center;
-}
+.task-meta { display: flex; gap: 6px; margin-top: 1px; align-items: center; }
 .task-summary {
-  font-size: 10px;
-  color: #999;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 350px;
+  font-size: 10px; color: #999;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;
 }
 .due-badge {
-  font-size: 9px;
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-weight: 600;
-  white-space: nowrap;
+  font-size: 9px; padding: 1px 6px; border-radius: 3px;
+  font-weight: 600; white-space: nowrap;
 }
 .due-badge.overdue { background: #e74c3c; color: #fff; }
 .due-badge.today { background: #e8b931; color: #1a1a2e; }
 .due-badge.future { background: #eee; color: #666; }
 
-.priority-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  margin-left: 8px;
+.task-actions { display: flex; gap: 4px; margin-left: 8px; flex-shrink: 0; }
+.btn-done {
+  border: none; padding: 4px 8px; border-radius: 5px;
+  font-size: 12px; cursor: pointer; transition: opacity 0.2s;
+  line-height: 1; background: #27ae60; color: #fff;
 }
-.priority-dot.high { background: #e74c3c; }
-.priority-dot.med { background: #e8b931; }
-.priority-dot.low { background: #27ae60; }
+.btn-done:hover { opacity: 0.75; }
+
+/* Animations */
+.task-row.removing { transform: translateX(100%); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
+.sortable-ghost { opacity: 0.35; background: #fdf6e0 !important; }
+.sortable-chosen { box-shadow: 0 2px 8px rgba(0,0,0,0.12); border-left: 3px solid #e8b931; }
 
 .footer {
-  background: #f8f8fa;
-  padding: 12px 28px;
-  text-align: center;
+  background: #f8f8fa; padding: 12px 28px; text-align: center;
   border-top: 1px solid #eee;
 }
 .footer p { color: #999; font-size: 11px; }
 
-.loading {
-  text-align: center;
-  padding: 40px;
-  color: #999;
-  font-size: 13px;
+.toast {
+  position: fixed; top: 16px; right: 16px;
+  background: #1a1a2e; color: #e8b931;
+  padding: 10px 20px; border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  opacity: 0; transform: translateY(-10px);
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000; pointer-events: none;
 }
-.empty-state {
-  text-align: center;
-  padding: 20px;
-  color: #bbb;
-  font-size: 12px;
+.toast.show { opacity: 1; transform: translateY(0); }
+
+.loading { text-align: center; padding: 40px; color: #999; font-size: 13px; }
+.empty-state { text-align: center; padding: 20px; color: #bbb; font-size: 12px; }
+
+/* API config modal */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); z-index: 999;
+  align-items: center; justify-content: center;
 }
+.modal-overlay.show { display: flex; }
+.modal {
+  background: #fff; border-radius: 12px; padding: 24px;
+  max-width: 420px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.modal h3 { font-size: 14px; margin-bottom: 12px; color: #1a1a2e; }
+.modal label { font-size: 11px; color: #666; display: block; margin-bottom: 4px; }
+.modal input {
+  width: 100%; padding: 8px 12px; border: 1.5px solid #ddd;
+  border-radius: 6px; font-size: 12px; font-family: inherit;
+  outline: none; margin-bottom: 12px;
+}
+.modal input:focus { border-color: #e8b931; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.modal-actions button {
+  padding: 6px 16px; border-radius: 6px; font-size: 12px;
+  font-weight: 600; cursor: pointer; font-family: inherit;
+  border: 1px solid #ddd; background: #fff; color: #333;
+}
+.modal-actions .save-btn { background: #e8b931; color: #1a1a2e; border-color: #e8b931; }
 </style>
 </head>
 <body>
@@ -187,19 +216,109 @@ body {
     <span class="date-text" id="date-text"></span>
     <span class="last-synced" id="last-synced"></span>
   </div>
-  <div id="content">
-    <div class="loading">Loading tasks...</div>
+  <div class="conn-bar">
+    <span class="conn-status"><span class="conn-dot" id="conn-dot"></span><span id="conn-text">Checking...</span></span>
+    <button class="conn-config" onclick="openConfig()">configure</button>
   </div>
+  <div class="add-bar">
+    <input type="text" id="task-input" placeholder="Add a task... (e.g. 'Call plumber tomorrow 3pm')"
+           onkeydown="if(event.key==='Enter') addTask()">
+    <button class="add-btn" id="add-btn" onclick="addTask()">Add</button>
+  </div>
+  <div id="content"><div class="loading">Loading tasks...</div></div>
   <div class="footer">
-    <p>Edgar — Your AI Executive Assistant</p>
+    <p>Edgar — Your AI Executive Assistant<br>Drag tasks to reorder. Drag across sections to recategorize.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- API Config Modal -->
+<div class="modal-overlay" id="config-modal">
+  <div class="modal">
+    <h3>API Connection</h3>
+    <label>Edgar API URL (Cloudflare tunnel or localhost)</label>
+    <input type="text" id="cfg-api-url" placeholder="https://xxxxx.trycloudflare.com">
+    <label>Username</label>
+    <input type="text" id="cfg-user" value="sam">
+    <label>Password</label>
+    <input type="password" id="cfg-pass" value="edgar">
+    <div class="modal-actions">
+      <button onclick="closeConfig()">Cancel</button>
+      <button class="save-btn" onclick="saveConfig()">Save & Test</button>
+    </div>
   </div>
 </div>
 
 <script>
-function escapeHtml(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
+// --- Config ---
+const DEFAULT_API = 'http://127.0.0.1:5151';
+let API_URL = localStorage.getItem('edgar_api_url') || DEFAULT_API;
+let API_USER = localStorage.getItem('edgar_api_user') || 'sam';
+let API_PASS = localStorage.getItem('edgar_api_pass') || 'edgar';
+let apiOnline = false;
+
+function authHeaders() {
+  return { 'Authorization': 'Basic ' + btoa(API_USER + ':' + API_PASS) };
+}
+
+async function apiFetch(path, opts = {}) {
+  const headers = { ...authHeaders(), ...(opts.headers || {}) };
+  const res = await fetch(API_URL + path, { ...opts, headers });
+  return res;
+}
+
+// --- Connection check ---
+async function checkConnection() {
+  const dot = document.getElementById('conn-dot');
+  const text = document.getElementById('conn-text');
+  try {
+    const res = await apiFetch('/api/todos', { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      apiOnline = true;
+      dot.className = 'conn-dot online';
+      text.textContent = 'Connected';
+      return true;
+    }
+  } catch (e) {}
+  apiOnline = false;
+  dot.className = 'conn-dot offline';
+  text.textContent = 'Offline — read only';
+  return false;
+}
+
+// --- Config modal ---
+function openConfig() {
+  document.getElementById('cfg-api-url').value = API_URL;
+  document.getElementById('cfg-user').value = API_USER;
+  document.getElementById('cfg-pass').value = API_PASS;
+  document.getElementById('config-modal').classList.add('show');
+}
+function closeConfig() { document.getElementById('config-modal').classList.remove('show'); }
+
+async function saveConfig() {
+  API_URL = document.getElementById('cfg-api-url').value.replace(/\/+$/, '');
+  API_USER = document.getElementById('cfg-user').value;
+  API_PASS = document.getElementById('cfg-pass').value;
+  localStorage.setItem('edgar_api_url', API_URL);
+  localStorage.setItem('edgar_api_user', API_USER);
+  localStorage.setItem('edgar_api_pass', API_PASS);
+  const ok = await checkConnection();
+  if (ok) {
+    showToast('Connected!');
+    closeConfig();
+    loadFromApi();
+  } else {
+    showToast('Connection failed — check URL');
+  }
+}
+
+// --- Helpers ---
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function showToast(msg, duration = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
 }
 
 function updateDate() {
@@ -213,26 +332,49 @@ function sortKey(t) {
     return -(0.6 * t.urgency + 0.4 * t.importance);
   return 0;
 }
-
 function priority(t) {
   if (t.urgency != null && t.importance != null)
     return Math.round((0.6 * t.urgency + 0.4 * t.importance) * 10) / 10;
   return 0;
 }
 
-async function loadTodos() {
+// --- Data loading ---
+// Try API first, fall back to static JSON
+async function loadData() {
+  if (apiOnline) {
+    await loadFromApi();
+  } else {
+    await loadFromJson();
+    checkConnection(); // try reconnecting
+  }
+}
+
+async function loadFromApi() {
+  try {
+    const res = await apiFetch('/api/todos');
+    const data = await res.json();
+    renderContent(data.work, data.personal);
+    if (data.last_scored) {
+      const d = new Date(data.last_scored);
+      document.getElementById('last-synced').textContent =
+        'Live: ' + d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    }
+  } catch (e) {
+    apiOnline = false;
+    loadFromJson();
+  }
+}
+
+async function loadFromJson() {
   try {
     const res = await fetch('todos.json?_=' + Date.now());
     const data = await res.json();
-
     const open = data.todos.filter(t => !t.done);
     const work = open.filter(t => t.life_area === 'work');
     const personal = open.filter(t => t.life_area === 'personal');
     work.sort((a, b) => sortKey(a) - sortKey(b));
     personal.sort((a, b) => sortKey(a) - sortKey(b));
-
     renderContent(work, personal);
-
     if (data.last_scored) {
       const d = new Date(data.last_scored);
       document.getElementById('last-synced').textContent =
@@ -243,11 +385,13 @@ async function loadTodos() {
   }
 }
 
+// --- Rendering ---
 function renderContent(work, personal) {
   const content = document.getElementById('content');
   content.innerHTML = '';
   content.appendChild(renderSection('work', 'WORK', work));
   content.appendChild(renderSection('personal', 'PERSONAL', personal));
+  initSortable();
 }
 
 function renderSection(type, label, tasks) {
@@ -263,8 +407,9 @@ function renderSection(type, label, tasks) {
 
   const list = document.createElement('ul');
   list.className = 'task-list';
+  list.id = `${type}-tasks`;
   if (tasks.length === 0) {
-    list.innerHTML = '<div class="empty-state">No tasks</div>';
+    list.innerHTML = '<div class="empty-state">No tasks — drag here to add</div>';
   } else {
     tasks.forEach((task, i) => list.appendChild(createTaskRow(task, i + 1)));
   }
@@ -275,6 +420,8 @@ function renderSection(type, label, tasks) {
 function createTaskRow(task, rank) {
   const row = document.createElement('li');
   row.className = 'task-row';
+  row.dataset.id = task.id;
+
   let dueBadge = '';
   if (task.due) {
     const dueDate = new Date(task.due);
@@ -287,23 +434,151 @@ function createTaskRow(task, rank) {
     const fmt = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     dueBadge = `<span class="due-badge ${cls}">${cls === 'overdue' ? 'OVERDUE ' : ''}${fmt}</span>`;
   }
+
   const summary = task.ai_summary ? `<span class="task-summary">${escapeHtml(task.ai_summary)}</span>` : '';
-  const p = priority(task);
-  const dotClass = p >= 7 ? 'high' : p >= 4 ? 'med' : 'low';
+
   row.innerHTML = `
+    <span class="drag-handle">&#x2630;</span>
     <span class="task-rank">${rank}.</span>
     <div class="task-info">
       <div class="task-title">${escapeHtml(task.title)}</div>
       <div class="task-meta">${dueBadge}${summary}</div>
     </div>
-    <span class="priority-dot ${dotClass}" title="Priority: ${p}"></span>
+    <div class="task-actions">
+      <button class="btn-done" onclick="markDone('${task.id}')" title="Done">&#10003;</button>
+    </div>
   `;
   return row;
 }
 
+// --- Drag and drop ---
+function initSortable() {
+  ['work', 'personal'].forEach(section => {
+    const el = document.getElementById(`${section}-tasks`);
+    if (!el) return;
+    const empty = el.querySelector('.empty-state');
+    if (empty) empty.remove();
+    new Sortable(el, {
+      group: 'tasks',
+      animation: 150,
+      handle: '.drag-handle',
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      onEnd: () => saveOrder(),
+    });
+  });
+}
+
+async function saveOrder() {
+  const workIds = [...document.querySelectorAll('#work-tasks .task-row')].map(el => el.dataset.id);
+  const personalIds = [...document.querySelectorAll('#personal-tasks .task-row')].map(el => el.dataset.id);
+
+  updateRanks();
+  updateCounts();
+
+  if (!apiOnline) {
+    showToast('Offline — order not saved');
+    return;
+  }
+
+  try {
+    await apiFetch('/api/todos/reorder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ work: workIds, personal: personalIds }),
+    });
+    showToast('Order saved');
+  } catch (e) {
+    showToast('Failed to save order');
+  }
+}
+
+function updateRanks() {
+  ['work', 'personal'].forEach(section => {
+    const rows = document.querySelectorAll(`#${section}-tasks .task-row`);
+    rows.forEach((row, i) => {
+      const rank = row.querySelector('.task-rank');
+      if (rank) rank.textContent = `${i + 1}.`;
+    });
+  });
+}
+
+function updateCounts() {
+  ['work', 'personal'].forEach(section => {
+    const rows = document.querySelectorAll(`#${section}-tasks .task-row`);
+    const countEl = document.querySelector(`#${section}-tasks`)?.closest('.section')?.querySelector('.section-count');
+    if (countEl) {
+      const n = rows.length;
+      countEl.textContent = `${n} task${n !== 1 ? 's' : ''}`;
+    }
+  });
+}
+
+// --- Actions ---
+async function addTask() {
+  const input = document.getElementById('task-input');
+  const btn = document.getElementById('add-btn');
+  const text = input.value.trim();
+  if (!text) return;
+
+  if (!apiOnline) {
+    showToast('Offline — cannot add tasks');
+    return;
+  }
+
+  btn.textContent = 'Adding...';
+  btn.disabled = true;
+  input.disabled = true;
+
+  try {
+    const res = await apiFetch('/api/todos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    if (res.ok) {
+      input.value = '';
+      showToast('Task added');
+      setTimeout(() => loadFromApi(), 1500); // wait for scoring
+    } else {
+      const data = await res.json();
+      showToast(data.error || 'Failed to add task');
+    }
+  } catch (e) {
+    showToast('Failed to add task');
+  } finally {
+    btn.textContent = 'Add';
+    btn.disabled = false;
+    input.disabled = false;
+    input.focus();
+  }
+}
+
+async function markDone(id) {
+  const row = document.querySelector(`[data-id="${id}"]`);
+  if (row) row.classList.add('removing');
+
+  setTimeout(async () => {
+    if (apiOnline) {
+      try {
+        const res = await apiFetch(`/api/todos/${id}/done`, { method: 'POST' });
+        if (res.ok) {
+          const data = await res.json();
+          showToast(`Done: ${data.completed}`);
+        }
+      } catch (e) {}
+    }
+    loadData();
+  }, 300);
+}
+
+// --- Init ---
 updateDate();
-loadTodos();
-setInterval(loadTodos, 60000);
+(async () => {
+  await checkConnection();
+  loadData();
+})();
+setInterval(loadData, 30000);
 </script>
 </body>
 </html>
