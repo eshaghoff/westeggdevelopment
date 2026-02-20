@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_scored": "2026-02-20T18:00:17",
+  "last_scored": "2026-02-20T18:16:26",
   "todos": [
     {
       "title": "List Pickwood Ln house",
@@ -507,6 +507,21 @@
       "tags": [],
       "done": false,
       "created": "2026-02-18T13:43:56",
+      "urgency": null,
+      "importance": null,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
+      "title": "Test item from SMS",
+      "due": "",
+      "id": "092b3b4b",
+      "description": "",
+      "life_area": "work",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-20T18:16:06",
       "urgency": null,
       "importance": null,
       "ai_summary": null,
