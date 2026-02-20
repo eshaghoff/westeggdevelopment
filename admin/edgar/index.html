@@ -253,10 +253,24 @@ body {
 <script>
 // --- Config ---
 const DEFAULT_API = 'http://127.0.0.1:5151';
-let API_URL = localStorage.getItem('edgar_api_url') || DEFAULT_API;
+let API_URL = localStorage.getItem('edgar_api_url') || '';
 let API_USER = localStorage.getItem('edgar_api_user') || 'sam';
 let API_PASS = localStorage.getItem('edgar_api_pass') || 'edgar';
 let apiOnline = false;
+
+// Auto-detect API URL from config.json (updated by sync script)
+async function loadConfig() {
+  try {
+    const res = await fetch('../config.json?_=' + Date.now(), { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      const cfg = await res.json();
+      if (cfg.edgar_api && !localStorage.getItem('edgar_api_url')) {
+        API_URL = cfg.edgar_api;
+      }
+    }
+  } catch (e) {}
+  if (!API_URL) API_URL = DEFAULT_API;
+}
 
 function authHeaders() {
   return { 'Authorization': 'Basic ' + btoa(API_USER + ':' + API_PASS) };
@@ -575,6 +589,7 @@ async function markDone(id) {
 // --- Init ---
 updateDate();
 (async () => {
+  await loadConfig();
   await checkConnection();
   loadData();
 })();

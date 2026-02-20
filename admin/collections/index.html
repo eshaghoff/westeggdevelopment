@@ -243,6 +243,7 @@ tr:hover td { background: rgba(39, 174, 96, 0.04); }
     <div class="tab active" data-tab="rent-roll" onclick="switchTab('rent-roll', this)">Rent Roll</div>
     <div class="tab" data-tab="charges" onclick="switchTab('charges', this)">Charges</div>
     <div class="tab" data-tab="payments" onclick="switchTab('payments', this)">Payments</div>
+    <div class="tab" data-tab="tenants" onclick="switchTab('tenants', this)">Tenants</div>
   </div>
 
   <div class="tab-content active" id="tab-rent-roll">
@@ -305,6 +306,56 @@ tr:hover td { background: rgba(39, 174, 96, 0.04); }
     <div id="payments-table"><div class="loading">Loading...</div></div>
   </div>
 
+  <div class="tab-content" id="tab-tenants">
+    <div class="add-payment-form" id="tenant-form" style="display:none">
+      <h4 id="tenant-form-title">ADD TENANT</h4>
+      <input type="hidden" id="ten-edit-id" value="">
+      <div class="form-row">
+        <div class="form-group" style="flex:2">
+          <label>Name</label>
+          <input type="text" id="ten-name" placeholder="Full name">
+        </div>
+        <div class="form-group">
+          <label>Property</label>
+          <select id="ten-deal"><option value="">Select...</option></select>
+        </div>
+        <div class="form-group">
+          <label>Unit</label>
+          <input type="text" id="ten-unit" placeholder="#1A">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Rent Amount</label>
+          <input type="number" id="ten-rent" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label>Due Day</label>
+          <input type="number" id="ten-due-day" value="1" min="1" max="28">
+        </div>
+        <div class="form-group">
+          <label>Lease Expiration</label>
+          <input type="date" id="ten-lxp">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="ten-phone" placeholder="Optional">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="text" id="ten-email" placeholder="Optional">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="pay-btn" id="ten-btn" onclick="submitTenant()">Add Tenant</button>
+        <button class="pay-btn" style="background:#999" onclick="resetTenantForm()">Cancel</button>
+      </div>
+    </div>
+    <div id="tenants-table"><div class="loading">Loading...</div></div>
+  </div>
+
   <div class="footer"><p id="sync-time">Loading...</p></div>
 </div>
 
@@ -327,12 +378,26 @@ tr:hover td { background: rgba(39, 174, 96, 0.04); }
 
 <script>
 // --- Config ---
-let API_URL = localStorage.getItem('collections_api_url') || 'http://127.0.0.1:5000';
+let API_URL = localStorage.getItem('collections_api_url') || '';
 let API_PASS = localStorage.getItem('collections_api_pass') || 'admin';
 let apiOnline = false;
 let DATA = null;
 let activeDeal = 'all';
 let currentPeriod = new Date().toISOString().slice(0, 7);
+
+async function loadConfig() {
+  try {
+    const res = await fetch('../config.json?_=' + Date.now(), { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      const cfg = await res.json();
+      // Collections doesn't have a tunnel yet, so this is future-proofed
+      if (cfg.collections_api && !localStorage.getItem('collections_api_url')) {
+        API_URL = cfg.collections_api;
+      }
+    }
+  } catch (e) {}
+  if (!API_URL) API_URL = 'http://127.0.0.1:5000';
+}
 
 function $(id) { return document.getElementById(id); }
 function fmt(n) { return '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
@@ -343,6 +408,12 @@ function formatPeriod(p) {
   const [y, m] = p.split('-');
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return months[parseInt(m) - 1] + ' ' + y;
+}
+
+function formatLxp(dateStr) {
+  if (!dateStr) return '<span style="color:#bbb">-</span>';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 function statusBadge(st) { return `<span class="status-badge ${st}">${st.toUpperCase()}</span>`; }
@@ -504,7 +575,9 @@ function renderAll() {
   renderRentRoll();
   renderCharges();
   renderPayments();
+  renderTenants();
   populatePaymentForm();
+  populateTenantForm();
 
   const d = new Date(DATA.exported_at);
   $('sync-time').textContent = (apiOnline ? 'Live: ' : 'Synced: ') + d.toLocaleString('en-US', {
@@ -563,7 +636,7 @@ function renderRentRoll() {
       <td>${escapeHtml(t.name)}</td>
       <td class="amount">${fmt(t.rent)}</td>
       <td>${t.due_day}</td>
-      <td style="font-size:11px">${t.lease_expiration || '<span style="color:#bbb">-</span>'}</td>
+      <td style="font-size:11px">${formatLxp(t.lease_expiration)}</td>
       <td>${leaseDaysBadge(t.lease_expiration)}</td>
     </tr>`;
   });
@@ -719,10 +792,162 @@ async function submitPayment() {
   }
 }
 
+// --- Tenant management ---
+function populateTenantForm() {
+  const sel = $('ten-deal');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Select property...</option>';
+  (DATA.deals || []).forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d.id;
+    opt.textContent = d.name;
+    sel.appendChild(opt);
+  });
+  if (current) sel.value = current;
+  if (apiOnline) $('tenant-form').style.display = 'block';
+  else $('tenant-form').style.display = 'none';
+}
+
+function renderTenants() {
+  const all = DATA.tenants || [];
+  if (all.length === 0) {
+    $('tenants-table').innerHTML = '<div class="loading">No tenants</div>';
+    return;
+  }
+
+  let html = '<table><tr><th>Name</th><th>Property</th><th>Unit</th><th>Rent</th><th>LXP</th><th>Days</th><th>Status</th><th></th></tr>';
+  all.forEach(t => {
+    const active = t.active !== false;
+    html += `<tr style="${active ? '' : 'opacity:0.5'}">
+      <td>${escapeHtml(t.name)}</td>
+      <td>${escapeHtml(t.deal)}</td>
+      <td>${escapeHtml(t.unit)}</td>
+      <td class="amount">${fmt(t.rent)}</td>
+      <td style="font-size:11px">${formatLxp(t.lease_expiration)}</td>
+      <td>${leaseDaysBadge(t.lease_expiration)}</td>
+      <td>${active ? '<span class="status-badge paid">ACTIVE</span>' : '<span class="status-badge late">INACTIVE</span>'}</td>
+      <td style="white-space:nowrap">
+        <button class="pay-btn" style="padding:2px 8px;font-size:10px;background:#4a90d9" onclick="editTenant(${t.id})">Edit</button>
+        ${active
+          ? `<button class="pay-btn" style="padding:2px 8px;font-size:10px;background:#e74c3c" onclick="deactivateTenant(${t.id})">Deactivate</button>`
+          : `<button class="pay-btn" style="padding:2px 8px;font-size:10px;background:#27ae60" onclick="activateTenant(${t.id})">Activate</button>`
+        }
+      </td>
+    </tr>`;
+  });
+  html += '</table>';
+  $('tenants-table').innerHTML = html;
+}
+
+function editTenant(id) {
+  const t = DATA.tenants.find(x => x.id === id);
+  if (!t) return;
+  $('ten-edit-id').value = id;
+  $('ten-name').value = t.name;
+  // Find deal id
+  const deal = DATA.deals.find(d => d.name === t.deal);
+  $('ten-deal').value = deal ? deal.id : '';
+  $('ten-unit').value = t.unit;
+  $('ten-rent').value = t.rent;
+  $('ten-due-day').value = t.due_day;
+  $('ten-lxp').value = t.lease_expiration || '';
+  $('ten-phone').value = t.phone || '';
+  $('ten-email').value = t.email || '';
+  $('tenant-form-title').textContent = 'EDIT TENANT';
+  $('ten-btn').textContent = 'Save Changes';
+  // Scroll to form
+  $('tenant-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetTenantForm() {
+  $('ten-edit-id').value = '';
+  $('ten-name').value = '';
+  $('ten-deal').value = '';
+  $('ten-unit').value = '';
+  $('ten-rent').value = '';
+  $('ten-due-day').value = '1';
+  $('ten-lxp').value = '';
+  $('ten-phone').value = '';
+  $('ten-email').value = '';
+  $('tenant-form-title').textContent = 'ADD TENANT';
+  $('ten-btn').textContent = 'Add Tenant';
+}
+
+async function submitTenant() {
+  if (!apiOnline) { showToast('Offline — cannot modify tenants'); return; }
+
+  const editId = $('ten-edit-id').value;
+  const body = {
+    name: $('ten-name').value.trim(),
+    deal_id: parseInt($('ten-deal').value),
+    unit: $('ten-unit').value.trim(),
+    rent_amount: parseFloat($('ten-rent').value),
+    due_day: parseInt($('ten-due-day').value),
+    lease_expiration: $('ten-lxp').value || null,
+    phone: $('ten-phone').value.trim() || null,
+    email: $('ten-email').value.trim() || null,
+  };
+
+  if (!body.name || !body.deal_id || !body.unit || !body.rent_amount) {
+    showToast('Fill in name, property, unit, and rent');
+    return;
+  }
+
+  const btn = $('ten-btn');
+  btn.disabled = true;
+
+  try {
+    const url = editId ? `/api/tenants/${editId}` : '/api/tenants';
+    const method = editId ? 'PUT' : 'POST';
+    const res = await fetch(API_URL + url, {
+      method, credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast(editId ? 'Tenant updated!' : 'Tenant added!');
+      resetTenantForm();
+      loadData();
+    } else {
+      showToast(data.error || 'Failed');
+    }
+  } catch (e) {
+    showToast('Failed: ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function deactivateTenant(id) {
+  if (!apiOnline) { showToast('Offline'); return; }
+  try {
+    const res = await fetch(API_URL + `/api/tenants/${id}/deactivate`, {
+      method: 'POST', credentials: 'include',
+    });
+    const data = await res.json();
+    if (data.ok) { showToast('Tenant deactivated'); loadData(); }
+    else { showToast(data.error || 'Failed'); }
+  } catch (e) { showToast('Failed'); }
+}
+
+async function activateTenant(id) {
+  if (!apiOnline) { showToast('Offline'); return; }
+  try {
+    const res = await fetch(API_URL + `/api/tenants/${id}/activate`, {
+      method: 'POST', credentials: 'include',
+    });
+    const data = await res.json();
+    if (data.ok) { showToast('Tenant activated'); loadData(); }
+    else { showToast(data.error || 'Failed'); }
+  } catch (e) { showToast('Failed'); }
+}
+
 // --- Init ---
 $('period-input').value = currentPeriod;
 
 (async () => {
+  await loadConfig();
   await checkConnection();
   loadData();
 })();
