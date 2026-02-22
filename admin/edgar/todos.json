@@ -521,10 +521,13 @@
       "order": 0
     }
   ],
-  "column_order": [
-    "work",
-    "personal",
-    "__spacer__",
-    "cat-cat_a98ba7"
-  ]
+  "column_order": {
+    "left": [
+      "work"
+    ],
+    "right": [
+      "personal",
+      "cat-cat_a98ba7"
+    ]
+  }
 }
