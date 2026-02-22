@@ -101,7 +101,30 @@ body {
 }
 .section-badge.work { background: #e8b931; color: #1a1a2e; }
 .section-badge.personal { background: #4a90d9; color: #fff; }
+.section-badge.category { color: #fff; }
 .section-count { color: #999; font-size: 12px; }
+.category-actions { margin-left: auto; display: flex; gap: 2px; }
+.category-actions button {
+  border: none; background: none; cursor: pointer;
+  font-size: 12px; color: #bbb; padding: 2px 4px; line-height: 1;
+}
+.category-actions button:hover { color: #e8b931; }
+.add-category-bar {
+  padding: 10px 28px; display: flex; align-items: center;
+}
+.add-category-btn {
+  background: none; border: 1.5px dashed #ccc;
+  padding: 5px 16px; border-radius: 6px; font-size: 12px;
+  color: #999; cursor: pointer; font-family: inherit;
+  transition: all 0.2s;
+}
+.add-category-btn:hover { border-color: #e8b931; color: #e8b931; }
+.color-swatches { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.color-swatch {
+  width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: border-color 0.15s;
+}
+.color-swatch:hover, .color-swatch.selected { border-color: #1a1a2e; }
 
 /* Task list */
 .task-list { list-style: none; min-height: 30px; }
@@ -250,6 +273,21 @@ body {
   </div>
 </div>
 
+<!-- Category Modal -->
+<div class="modal-overlay" id="cat-modal">
+  <div class="modal">
+    <h3 id="cat-modal-title">New Project</h3>
+    <label>Project Name</label>
+    <input type="text" id="cat-name" placeholder="e.g. 110 Northern" onkeydown="if(event.key==='Enter') saveCategory()">
+    <label>Color</label>
+    <div class="color-swatches" id="cat-swatches"></div>
+    <div class="modal-actions">
+      <button onclick="closeCatModal()">Cancel</button>
+      <button class="save-btn" onclick="saveCategory()">Save</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // --- Config ---
 const DEFAULT_API = 'http://127.0.0.1:5151';
@@ -257,6 +295,9 @@ let API_URL = localStorage.getItem('edgar_api_url') || '';
 let API_USER = localStorage.getItem('edgar_api_user') || 'sam';
 let API_PASS = localStorage.getItem('edgar_api_pass') || 'edgar';
 let apiOnline = false;
+let currentCategories = [];
+const CAT_COLORS = ['#e8b931','#4a90d9','#27ae60','#e74c3c','#9b59b6','#e67e22','#1abc9c','#34495e'];
+let selectedCatColor = CAT_COLORS[0];
 
 // Auto-detect API URL from config.json (permanent tunnel URLs)
 async function loadConfig() {
@@ -369,7 +410,8 @@ async function loadFromApi() {
   try {
     const res = await apiFetch('/api/todos');
     const data = await res.json();
-    renderContent(data.work, data.personal);
+    currentCategories = data.categories || [];
+    renderContent(data.work, data.personal, currentCategories);
     if (data.last_scored) {
       const d = new Date(data.last_scored);
       document.getElementById('last-synced').textContent =
@@ -390,7 +432,8 @@ async function loadFromJson() {
     const personal = open.filter(t => t.life_area === 'personal');
     work.sort((a, b) => sortKey(a) - sortKey(b));
     personal.sort((a, b) => sortKey(a) - sortKey(b));
-    renderContent(work, personal);
+    currentCategories = data.categories || [];
+    renderContent(work, personal, currentCategories);
     if (data.last_scored) {
       const d = new Date(data.last_scored);
       document.getElementById('last-synced').textContent =
@@ -402,12 +445,35 @@ async function loadFromJson() {
 }
 
 // --- Rendering ---
-function renderContent(work, personal) {
+function renderContent(work, personal, categories = []) {
   const content = document.getElementById('content');
   content.innerHTML = '';
-  content.appendChild(renderSection('work', 'WORK', work));
-  content.appendChild(renderSection('personal', 'PERSONAL', personal));
-  initSortable();
+
+  // Tasks assigned to a custom category go in their section, not work/personal
+  const catNames = categories.map(c => c.name);
+  const uncatWork = work.filter(t => !catNames.includes(t.category));
+  const uncatPersonal = personal.filter(t => !catNames.includes(t.category));
+
+  content.appendChild(renderSection('work', 'WORK', uncatWork));
+  content.appendChild(renderSection('personal', 'PERSONAL', uncatPersonal));
+
+  // Custom categories
+  const allTasks = [...work, ...personal];
+  categories.sort((a, b) => a.order - b.order);
+  for (const cat of categories) {
+    const catTasks = allTasks.filter(t => t.category === cat.name);
+    content.appendChild(renderCategorySection(cat, catTasks));
+  }
+
+  // "+ New Project" button
+  if (apiOnline) {
+    const addBar = document.createElement('div');
+    addBar.className = 'add-category-bar';
+    addBar.innerHTML = '<button class="add-category-btn" onclick="openAddCategory()">+ New Project</button>';
+    content.appendChild(addBar);
+  }
+
+  initSortable(categories);
 }
 
 function renderSection(type, label, tasks) {
@@ -426,6 +492,34 @@ function renderSection(type, label, tasks) {
   list.id = `${type}-tasks`;
   if (tasks.length === 0) {
     list.innerHTML = '<div class="empty-state">No tasks — drag here to add</div>';
+  } else {
+    tasks.forEach((task, i) => list.appendChild(createTaskRow(task, i + 1)));
+  }
+  section.appendChild(list);
+  return section;
+}
+
+function renderCategorySection(cat, tasks) {
+  const section = document.createElement('div');
+  section.className = 'section';
+  const header = document.createElement('div');
+  header.className = 'section-header';
+  header.innerHTML = `
+    <span class="section-badge category" style="background:${cat.color}">${escapeHtml(cat.name.toUpperCase())}</span>
+    <span class="section-count">${tasks.length} task${tasks.length !== 1 ? 's' : ''}</span>
+    <div class="category-actions">
+      <button onclick="editCategory('${cat.id}')" title="Edit">&#9998;</button>
+      <button onclick="deleteCategory('${cat.id}')" title="Delete">&times;</button>
+    </div>
+  `;
+  section.appendChild(header);
+
+  const list = document.createElement('ul');
+  list.className = 'task-list';
+  list.id = `cat-${cat.id}-tasks`;
+  list.dataset.category = cat.name;
+  if (tasks.length === 0) {
+    list.innerHTML = '<div class="empty-state">Drag tasks here</div>';
   } else {
     tasks.forEach((task, i) => list.appendChild(createTaskRow(task, i + 1)));
   }
@@ -468,9 +562,10 @@ function createTaskRow(task, rank) {
 }
 
 // --- Drag and drop ---
-function initSortable() {
-  ['work', 'personal'].forEach(section => {
-    const el = document.getElementById(`${section}-tasks`);
+function initSortable(categories = []) {
+  const sectionIds = ['work', 'personal', ...categories.map(c => `cat-${c.id}`)];
+  sectionIds.forEach(id => {
+    const el = document.getElementById(`${id}-tasks`);
     if (!el) return;
     const empty = el.querySelector('.empty-state');
     if (empty) empty.remove();
@@ -489,6 +584,15 @@ async function saveOrder() {
   const workIds = [...document.querySelectorAll('#work-tasks .task-row')].map(el => el.dataset.id);
   const personalIds = [...document.querySelectorAll('#personal-tasks .task-row')].map(el => el.dataset.id);
 
+  // Collect category groups
+  const categoryGroups = {};
+  document.querySelectorAll('[id^="cat-"][id$="-tasks"]').forEach(list => {
+    const catName = list.dataset.category;
+    if (catName) {
+      categoryGroups[catName] = [...list.querySelectorAll('.task-row')].map(el => el.dataset.id);
+    }
+  });
+
   updateRanks();
   updateCounts();
 
@@ -501,7 +605,7 @@ async function saveOrder() {
     await apiFetch('/api/todos/reorder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ work: workIds, personal: personalIds }),
+      body: JSON.stringify({ work: workIds, personal: personalIds, categories: categoryGroups }),
     });
     showToast('Order saved');
   } catch (e) {
@@ -510,9 +614,8 @@ async function saveOrder() {
 }
 
 function updateRanks() {
-  ['work', 'personal'].forEach(section => {
-    const rows = document.querySelectorAll(`#${section}-tasks .task-row`);
-    rows.forEach((row, i) => {
+  document.querySelectorAll('.task-list').forEach(list => {
+    list.querySelectorAll('.task-row').forEach((row, i) => {
       const rank = row.querySelector('.task-rank');
       if (rank) rank.textContent = `${i + 1}.`;
     });
@@ -520,9 +623,9 @@ function updateRanks() {
 }
 
 function updateCounts() {
-  ['work', 'personal'].forEach(section => {
-    const rows = document.querySelectorAll(`#${section}-tasks .task-row`);
-    const countEl = document.querySelector(`#${section}-tasks`)?.closest('.section')?.querySelector('.section-count');
+  document.querySelectorAll('.task-list').forEach(list => {
+    const rows = list.querySelectorAll('.task-row');
+    const countEl = list.closest('.section')?.querySelector('.section-count');
     if (countEl) {
       const n = rows.length;
       countEl.textContent = `${n} task${n !== 1 ? 's' : ''}`;
@@ -586,6 +689,111 @@ async function markDone(id) {
     }
     loadData();
   }, 300);
+}
+
+// --- Category management ---
+function initSwatches(selected) {
+  const container = document.getElementById('cat-swatches');
+  container.innerHTML = '';
+  selectedCatColor = selected || CAT_COLORS[0];
+  CAT_COLORS.forEach(c => {
+    const sw = document.createElement('div');
+    sw.className = 'color-swatch' + (c === selectedCatColor ? ' selected' : '');
+    sw.style.background = c;
+    sw.onclick = () => {
+      selectedCatColor = c;
+      container.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+      sw.classList.add('selected');
+    };
+    container.appendChild(sw);
+  });
+}
+
+function openAddCategory() {
+  document.getElementById('cat-modal-title').textContent = 'New Project';
+  document.getElementById('cat-name').value = '';
+  const modal = document.getElementById('cat-modal');
+  modal.dataset.mode = 'create';
+  modal.dataset.catId = '';
+  initSwatches(CAT_COLORS[0]);
+  modal.classList.add('show');
+  setTimeout(() => document.getElementById('cat-name').focus(), 100);
+}
+
+function editCategory(catId) {
+  const cat = currentCategories.find(c => c.id === catId);
+  if (!cat) return;
+  document.getElementById('cat-modal-title').textContent = 'Edit Project';
+  document.getElementById('cat-name').value = cat.name;
+  const modal = document.getElementById('cat-modal');
+  modal.dataset.mode = 'edit';
+  modal.dataset.catId = catId;
+  initSwatches(cat.color);
+  modal.classList.add('show');
+  setTimeout(() => document.getElementById('cat-name').focus(), 100);
+}
+
+function closeCatModal() {
+  document.getElementById('cat-modal').classList.remove('show');
+}
+
+async function saveCategory() {
+  const modal = document.getElementById('cat-modal');
+  const name = document.getElementById('cat-name').value.trim();
+  if (!name) return;
+  if (!apiOnline) { showToast('Offline'); return; }
+
+  try {
+    if (modal.dataset.mode === 'create') {
+      const res = await apiFetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, color: selectedCatColor }),
+      });
+      if (res.ok) {
+        showToast('Project created');
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Failed to create');
+        return;
+      }
+    } else {
+      const catId = modal.dataset.catId;
+      const res = await apiFetch(`/api/categories/${catId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, color: selectedCatColor }),
+      });
+      if (res.ok) {
+        showToast('Project updated');
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Failed to update');
+        return;
+      }
+    }
+    closeCatModal();
+    loadFromApi();
+  } catch (e) {
+    showToast('Failed to save project');
+  }
+}
+
+async function deleteCategory(catId) {
+  const cat = currentCategories.find(c => c.id === catId);
+  if (!cat) return;
+  if (!confirm(`Delete "${cat.name}"? Tasks will move back to Work/Personal.`)) return;
+  if (!apiOnline) { showToast('Offline'); return; }
+
+  try {
+    const res = await apiFetch(`/api/categories/${catId}`, { method: 'DELETE' });
+    if (res.ok) {
+      showToast('Project deleted');
+      loadFromApi();
+    }
+  } catch (e) {
+    showToast('Failed to delete project');
+  }
 }
 
 // --- Init ---
