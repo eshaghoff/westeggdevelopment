@@ -255,9 +255,10 @@ body {
   min-height: 60px;
 }
 
-/* Add column card */
+/* Add column card (sits inside a grid-spacer) */
 .add-column-card {
   display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 8px;
 }
 .add-category-btn {
   background: none; border: 2px dashed #ccc;
@@ -588,39 +589,29 @@ function renderBoard(work, personal, categories = [], columnOrder = []) {
     renderOrder.forEach(id => itemOrder.push({ type: 'column', id }));
   }
 
-  // Render items
+  // Render items (columns and any saved spacers)
   for (const item of itemOrder) {
     if (item.type === 'spacer') {
-      const spacer = document.createElement('div');
-      spacer.className = 'grid-spacer';
-      spacer.dataset.colId = '__spacer__';
-      board.appendChild(spacer);
+      board.appendChild(createSpacer());
     } else if (columnBuilders[item.id]) {
       board.appendChild(columnBuilders[item.id]());
     }
   }
 
-  // "+ New Project" card — always last, outside drag system
-  if (apiOnline) {
-    const addCard = document.createElement('div');
-    addCard.className = 'add-column-card';
-    addCard.id = 'add-column-card';
-    addCard.innerHTML = '<button class="add-category-btn" onclick="openAddCategory()">+ New Project</button>';
-    board.appendChild(addCard);
+  // Ensure even number of grid items — add spacer if odd
+  const colAndSpacerCount = board.querySelectorAll('.column, .grid-spacer').length;
+  if (colAndSpacerCount % 2 === 1) {
+    board.appendChild(createSpacer());
   }
 
-  // Auto-add spacer if odd number of columns so every row is full
-  const colCount = board.querySelectorAll('.column').length;
-  if (colCount % 2 === 1) {
-    const spacer = document.createElement('div');
-    spacer.className = 'grid-spacer';
-    spacer.dataset.colId = '__spacer__';
-    const addCard = document.getElementById('add-column-card');
-    if (addCard) {
-      board.insertBefore(spacer, addCard);
-    } else {
-      board.appendChild(spacer);
-    }
+  // Always add one more spacer row with "+ New Project" button
+  if (apiOnline) {
+    const addSpacer = createSpacer();
+    addSpacer.innerHTML = '<button class="add-category-btn" onclick="openAddCategory()">+ New Project</button>';
+    addSpacer.classList.add('add-column-card');
+    board.appendChild(addSpacer);
+    // Pair it with an empty spacer
+    board.appendChild(createSpacer());
   }
 
   initTaskSortables(categories);
@@ -703,6 +694,13 @@ function createTaskRow(task, rank) {
   return row;
 }
 
+function createSpacer() {
+  const spacer = document.createElement('div');
+  spacer.className = 'grid-spacer';
+  spacer.dataset.colId = '__spacer__';
+  return spacer;
+}
+
 // --- Drag and drop: tasks within/across columns ---
 function initTaskSortables(categories = []) {
   const sectionIds = ['work', 'personal', ...categories.map(c => `cat-${c.id}`)];
@@ -742,7 +740,7 @@ function initColumnSortable() {
     handle: '.col-drag-handle',
     ghostClass: 'column-ghost',
     chosenClass: 'column-chosen',
-    draggable: '.column, .grid-spacer',
+    draggable: '.column, .grid-spacer:not(.add-column-card)',
     filter: '.add-column-card',
     onEnd: () => {
       cleanupSpacers();
@@ -752,46 +750,26 @@ function initColumnSortable() {
 }
 
 // Ensure spacers fill gaps so every row has 2 items.
-// Remove extra trailing spacers but keep interior ones.
+// Only operates on the draggable area (excludes add-button row at bottom).
 function cleanupSpacers() {
   const board = document.getElementById('board');
-  const items = [...board.querySelectorAll('.column, .grid-spacer')];
-  // Remove all trailing spacers
+  // Get only the draggable items (columns + plain spacers, not add-button)
+  const items = [...board.querySelectorAll('.column, .grid-spacer:not(.add-column-card)')];
+  // Remove trailing spacers from draggable area
   while (items.length > 0 && items[items.length - 1].classList.contains('grid-spacer')) {
     items[items.length - 1].remove();
     items.pop();
   }
-  // If odd number of items, add one spacer at the end to fill the row
-  const remaining = board.querySelectorAll('.column, .grid-spacer');
-  if (remaining.length % 2 === 1) {
-    const spacer = document.createElement('div');
-    spacer.className = 'grid-spacer';
-    spacer.dataset.colId = '__spacer__';
-    // Insert before add-column-card if it exists
-    const addCard = document.getElementById('add-column-card');
-    if (addCard) {
-      board.insertBefore(spacer, addCard);
+  // If odd number left, add a spacer before the add-button row
+  if (items.length % 2 === 1) {
+    const addRow = board.querySelector('.add-column-card');
+    const spacer = createSpacer();
+    if (addRow) {
+      board.insertBefore(spacer, addRow);
     } else {
       board.appendChild(spacer);
     }
   }
-}
-
-// Add a spacer to the board (called by double-clicking empty grid area or via context menu)
-function addSpacer() {
-  const board = document.getElementById('board');
-  const spacer = document.createElement('div');
-  spacer.className = 'grid-spacer';
-  spacer.dataset.colId = '__spacer__';
-  const addCard = document.getElementById('add-column-card');
-  if (addCard) {
-    board.insertBefore(spacer, addCard);
-  } else {
-    board.appendChild(spacer);
-  }
-  // Reinit sortable so new spacer is draggable
-  initColumnSortable();
-  saveColumnOrder();
 }
 
 async function saveOrder() {
@@ -825,13 +803,15 @@ async function saveOrder() {
 
 async function saveColumnOrder() {
   if (!apiOnline) return;
-  // Read the new column order from the DOM — includes spacers
-  const items = document.querySelectorAll('.column, .grid-spacer');
+  // Read the new column order from the DOM — includes interior spacers but not add-button row
+  const items = document.querySelectorAll('.column, .grid-spacer:not(.add-column-card)');
   const order = [];
   items.forEach(item => {
     const colId = item.dataset.colId;
     if (colId) order.push(colId);
   });
+  // Strip trailing spacers from saved order
+  while (order.length > 0 && order[order.length - 1] === '__spacer__') order.pop();
 
   try {
     await apiFetch('/api/column-order', {
