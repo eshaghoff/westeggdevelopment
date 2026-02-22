@@ -53,6 +53,7 @@
   .leaflet-tile-pane { filter: saturate(0.7) brightness(1.6) contrast(1.05); }
   .leaflet-overlay-pane { z-index: 399 !important; }
   .leaflet-marker-pane { z-index: 620 !important; }
+  .neighborhood-label { transition: opacity 0.25s ease; }
   .leaflet-popup-pane { z-index: 700 !important; }
 
   /* Top bar */
@@ -12282,6 +12283,7 @@ function idwInterpolate(lat, lng, data, power) {
 // ============================================================
 let heatLayer = null;
 const labelLayer = L.layerGroup();
+let labelMarkers = []; // { marker, count } pairs for zoom-based label filtering
 const clickLayer = L.layerGroup();
 const subwayLayer = L.layerGroup();
 const crimeLayer = L.layerGroup();
@@ -12630,10 +12632,11 @@ function buildRentLayers(filter) {
   if (layerStates.rent) heatLayer.addTo(map);
 
   // Labels (neighborhood name only — no rent number)
+  labelMarkers = [];
   nData.forEach(n => {
     const label = L.marker([n.lat, n.lng], {
       icon: L.divIcon({
-        className: '',
+        className: 'neighborhood-label',
         html: `<div style="
           font-family: 'DM Sans', sans-serif;
           font-size: 10px;
@@ -12650,10 +12653,12 @@ function buildRentLayers(filter) {
       }),
       interactive: false
     });
+    labelMarkers.push({ marker: label, count: n.count });
     labelLayer.addLayer(label);
   });
 
   if (layerStates.labels) labelLayer.addTo(map);
+  requestAnimationFrame(updateLabelVisibility);
 
   // Invisible click targets
   nData.forEach(n => {
@@ -12680,6 +12685,50 @@ function buildRentLayers(filter) {
 
 let currentNeighborhoods = NEIGHBORHOODS;
 let currentHeatPoints = HEAT_POINTS;
+
+// ============================================================
+// ZOOM-DEPENDENT LABEL VISIBILITY
+// ============================================================
+
+/**
+ * Returns the minimum listing count a neighborhood needs to be
+ * visible at the given zoom level. Borough-filtered views use
+ * lower thresholds since far fewer labels are on screen.
+ */
+function getCountThreshold(zoom) {
+  const isFiltered = activeBorough && activeBorough !== 'all';
+  const divisor = isFiltered ? 4 : 1;
+
+  let threshold;
+  if (zoom <= 10)       threshold = 400;
+  else if (zoom === 11) threshold = 200;
+  else if (zoom === 12) threshold = 100;
+  else if (zoom === 13) threshold = 25;
+  else if (zoom === 14) threshold = 10;
+  else                  threshold = 0;
+
+  return Math.floor(threshold / divisor);
+}
+
+/**
+ * Show/hide individual label markers by toggling CSS opacity.
+ * Uses opacity (not addLayer/removeLayer) for smooth 0.25s fade
+ * transition defined by the .neighborhood-label CSS rule.
+ */
+function updateLabelVisibility() {
+  if (!layerStates.labels) return;
+
+  const zoom = map.getZoom();
+  const threshold = getCountThreshold(zoom);
+
+  labelMarkers.forEach(({ marker, count }) => {
+    const el = marker.getElement();
+    if (!el) return;
+    el.style.opacity = count >= threshold ? '1' : '0';
+  });
+}
+
+map.on('zoomend', updateLabelVisibility);
 
 // Subway markers
 subwayStations.forEach(s => {
@@ -12853,6 +12902,7 @@ function toggleLayer(name) {
     layerStates.labels = !layerStates.labels;
     if (layerStates.labels) {
       labelLayer.addTo(map);
+      updateLabelVisibility();
     } else {
       map.removeLayer(labelLayer);
     }
