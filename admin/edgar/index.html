@@ -77,36 +77,41 @@ body {
 .add-btn:hover { opacity: 0.85; }
 .add-btn:disabled { opacity: 0.5; cursor: default; }
 
-/* Board layout — wrapping grid */
+/* Board layout — snap grid like a bulletin board */
 .board {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
   padding: 16px 20px;
   min-height: calc(100vh - 120px);
-  align-items: flex-start;
-  align-content: flex-start;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .board { grid-template-columns: 1fr; }
 }
 
 .column {
-  width: calc(50% - 8px);
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-@media (max-width: 700px) {
-  .column { width: 100%; }
+  transition: box-shadow 0.2s;
 }
 
 /* Draggable column styling */
-.column-ghost { opacity: 0.3; }
-.column-chosen { box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-.column-drag { cursor: grab; }
-.column-drag:active { cursor: grabbing; }
+.column-ghost {
+  opacity: 0.15;
+  border: 2px dashed #e8b931;
+  background: #fdf6e0 !important;
+  box-shadow: none;
+}
+.column-chosen {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  z-index: 10;
+}
 
 .col-header {
   padding: 10px 14px;
@@ -196,12 +201,7 @@ body {
 
 /* Add column card */
 .add-column-card {
-  width: calc(50% - 8px);
   display: flex; align-items: flex-start; justify-content: center;
-  padding-top: 0;
-}
-@media (max-width: 700px) {
-  .add-column-card { width: 100%; }
 }
 .add-category-btn {
   background: none; border: 2px dashed #ccc;
