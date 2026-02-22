@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_scored": "2026-02-22T07:00:21",
+  "last_scored": "2026-02-22T10:35:20",
   "todos": [
     {
       "title": "List Pickwood Ln house",
@@ -496,19 +496,21 @@
       "importance": 0.4,
       "ai_summary": null,
       "snoozed": false
-    }
-  ],
-  "categories": [
+    },
     {
-      "name": "110 Northern",
-      "id": "cat_5cc032",
-      "color": "#27ae60",
-      "order": 0
+      "title": "West Egg should have an ig post for the heat map",
+      "due": "",
+      "id": "d219c63d",
+      "description": "",
+      "life_area": "work",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-22T10:35:04",
+      "urgency": null,
+      "importance": null,
+      "ai_summary": null,
+      "snoozed": false
     }
-  ],
-  "column_order": [
-    "cat-cat_5cc032",
-    "work",
-    "personal"
   ]
 }
