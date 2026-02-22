@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_scored": "2026-02-22T14:30:22",
+  "last_scored": "2026-02-22T15:00:17",
   "todos": [
     {
       "title": "List Pickwood Ln house",
@@ -523,7 +523,7 @@
   ],
   "column_order": [
     "work",
-    "personal",
-    "cat-cat_a98ba7"
+    "cat-cat_a98ba7",
+    "personal"
   ]
 }
