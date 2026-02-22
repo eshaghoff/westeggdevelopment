@@ -97,17 +97,20 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   transition: box-shadow 0.2s;
 }
+.col-header { border-radius: 10px 10px 0 0; background: #fff; }
 
-/* Draggable column styling */
+/* Draggable column styling — ghost shows the drop slot */
 .column-ghost {
-  opacity: 0.15;
+  opacity: 1 !important;
   border: 2px dashed #e8b931;
   background: #fdf6e0 !important;
   box-shadow: none;
+  border-radius: 10px;
 }
+.column-ghost > * { opacity: 0.25; }
 .column-chosen {
   box-shadow: 0 8px 30px rgba(0,0,0,0.18);
   z-index: 10;
@@ -143,9 +146,18 @@ body {
 
 /* Task list inside columns */
 .task-list {
-  list-style: none; min-height: 40px; padding: 6px 8px;
+  list-style: none; min-height: 60px; padding: 6px 8px;
   flex: 1;
+  background: #fff;
+  border-radius: 0 0 10px 10px;
 }
+/* Hide empty-state placeholder when task rows exist */
+.task-list .empty-state { pointer-events: none; }
+.task-list .task-row ~ .empty-state { display: none; }
+.task-list:has(.task-row) .empty-state { display: none; }
+
+/* Highlight column when dragging a task over it */
+.column.sortable-hover { box-shadow: 0 0 0 2px #e8b931, 0 2px 8px rgba(0,0,0,0.06); }
 .task-row {
   display: flex; align-items: center; padding: 6px 8px;
   border-radius: 6px; margin-bottom: 2px;
@@ -193,8 +205,37 @@ body {
 
 /* Animations */
 .task-row.removing { transform: translateX(100%); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
-.sortable-ghost { opacity: 0.35; background: #fdf6e0 !important; }
-.sortable-chosen { box-shadow: 0 2px 8px rgba(0,0,0,0.12); border-left: 3px solid #e8b931; }
+
+/* Drop-target insertion line — the ghost is placed at the insertion point by SortableJS */
+.sortable-ghost {
+  opacity: 0 !important;
+  height: 4px !important;
+  min-height: 4px !important;
+  max-height: 4px !important;
+  overflow: hidden;
+  padding: 0 !important;
+  margin: 2px 8px !important;
+  background: #e8b931 !important;
+  border-radius: 2px;
+  border: none !important;
+  box-shadow: 0 0 8px rgba(232,185,49,0.5);
+}
+.sortable-ghost * { display: none !important; }
+
+/* The item being dragged */
+.sortable-chosen {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  border-left: 3px solid #e8b931;
+  background: #fff;
+  z-index: 100;
+}
+.sortable-drag {
+  opacity: 0.9 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  border-left: 3px solid #e8b931;
+  background: #fff !important;
+  border-radius: 6px;
+}
 
 .empty-state { text-align: center; padding: 20px 10px; color: #bbb; font-size: 11px; }
 .loading { text-align: center; padding: 40px; color: #999; font-size: 13px; }
@@ -613,15 +654,26 @@ function initTaskSortables(categories = []) {
   sectionIds.forEach(id => {
     const el = document.getElementById(`${id}-tasks`);
     if (!el) return;
-    const empty = el.querySelector('.empty-state');
-    if (empty) empty.remove();
+    // Don't remove .empty-state — CSS hides it when task-rows exist
     new Sortable(el, {
       group: 'tasks',
       animation: 150,
       handle: '.drag-handle',
       ghostClass: 'sortable-ghost',
       chosenClass: 'sortable-chosen',
-      onEnd: () => saveOrder(),
+      dragClass: 'sortable-drag',
+      emptyInsertThreshold: 40,
+      fallbackOnBody: true,
+      swapThreshold: 0.65,
+      onStart: function(evt) {
+        // Add a class to all task lists to expand drop zones
+        document.querySelectorAll('.task-list').forEach(l => l.style.minHeight = '80px');
+      },
+      onEnd: function(evt) {
+        // Restore normal min-heights
+        document.querySelectorAll('.task-list').forEach(l => l.style.minHeight = '');
+        saveOrder();
+      },
     });
   });
 }
