@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_scored": "2026-02-22T17:30:22",
+  "last_scored": "2026-02-22T17:56:16",
   "todos": [
     {
       "title": "The Real Deal: launch it, own it, let them talk about it (Hannah job, future byline)",
@@ -556,30 +556,21 @@
       "importance": 2.5,
       "ai_summary": null,
       "snoozed": false
-    }
-  ],
-  "categories": [
-    {
-      "name": "Northern Boulevard",
-      "id": "cat_a98ba7",
-      "color": "#27ae60",
-      "order": 0
     },
     {
-      "name": "OCL Red Hook",
-      "id": "cat_3a4912",
-      "color": "#e8b931",
-      "order": 1
+      "title": "Check on Camy",
+      "due": "",
+      "id": "12a7a853",
+      "description": "",
+      "life_area": "personal",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-22T17:56:00",
+      "urgency": null,
+      "importance": null,
+      "ai_summary": null,
+      "snoozed": false
     }
-  ],
-  "column_order": {
-    "left": [
-      "work",
-      "personal"
-    ],
-    "right": [
-      "cat-cat_3a4912",
-      "cat-cat_a98ba7"
-    ]
-  }
+  ]
 }
