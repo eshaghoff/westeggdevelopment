@@ -123,21 +123,6 @@
       "snoozed": false
     },
     {
-      "title": "Ask Aries about SV art",
-      "due": "",
-      "id": "3e673076",
-      "description": "",
-      "life_area": "personal",
-      "category": "general",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-10T17:19:59",
-      "urgency": 3.0,
-      "importance": 3.0,
-      "ai_summary": "Personal art inquiry - very low priority",
-      "snoozed": false
-    },
-    {
       "title": "Call Spectrum to improve internet connection",
       "due": "",
       "id": "4946fc81",
@@ -537,8 +522,8 @@
     }
   ],
   "column_order": [
-    "personal",
     "work",
+    "personal",
     "cat-cat_5cc032"
   ]
 }
