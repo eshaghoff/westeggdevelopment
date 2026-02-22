@@ -390,9 +390,9 @@ async function loadConfig() {
     const res = await fetch('../config.json?_=' + Date.now(), { signal: AbortSignal.timeout(3000) });
     if (res.ok) {
       const cfg = await res.json();
-      // Collections doesn't have a tunnel yet, so this is future-proofed
-      if (cfg.collections_api && !localStorage.getItem('collections_api_url')) {
+      if (cfg.collections_api) {
         API_URL = cfg.collections_api;
+        localStorage.removeItem('collections_api_url');
       }
     }
   } catch (e) {}

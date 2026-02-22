@@ -258,14 +258,16 @@ let API_USER = localStorage.getItem('edgar_api_user') || 'sam';
 let API_PASS = localStorage.getItem('edgar_api_pass') || 'edgar';
 let apiOnline = false;
 
-// Auto-detect API URL from config.json (updated by sync script)
+// Auto-detect API URL from config.json (permanent tunnel URLs)
 async function loadConfig() {
   try {
     const res = await fetch('../config.json?_=' + Date.now(), { signal: AbortSignal.timeout(3000) });
     if (res.ok) {
       const cfg = await res.json();
-      if (cfg.edgar_api && !localStorage.getItem('edgar_api_url')) {
+      if (cfg.edgar_api) {
         API_URL = cfg.edgar_api;
+        // Clear stale localStorage so config.json always wins
+        localStorage.removeItem('edgar_api_url');
       }
     }
   } catch (e) {}
