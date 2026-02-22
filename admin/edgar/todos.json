@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_scored": "2026-02-22T17:09:06",
+  "last_scored": "2026-02-22T17:14:20",
   "todos": [
     {
       "title": "List Pickwood Ln house",
@@ -12,8 +12,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-10T17:19:29",
-      "urgency": 7.0,
-      "importance": 7.0,
+      "urgency": 7.8,
+      "importance": 7.8,
       "ai_summary": "Core revenue activity; listing generates deals and commissions",
       "snoozed": false
     },
@@ -27,8 +27,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-10T17:19:33",
-      "urgency": 3.0,
-      "importance": 3.0,
+      "urgency": 2.2,
+      "importance": 2.2,
       "ai_summary": "Personal parking logistics, likely near-term need",
       "snoozed": false
     },
@@ -38,12 +38,12 @@
       "id": "2310e5a4",
       "description": "",
       "life_area": "work",
-      "category": "general",
+      "category": "OCL Red Hook",
       "tags": [],
       "done": false,
       "created": "2026-02-10T17:19:37",
-      "urgency": 9.6,
-      "importance": 9.6,
+      "urgency": 3.3,
+      "importance": 3.3,
       "ai_summary": "Insurance premium reduction impacts operating costs directly",
       "snoozed": false
     },
@@ -57,8 +57,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-10T17:19:41",
-      "urgency": 5.7,
-      "importance": 5.7,
+      "urgency": 6.5,
+      "importance": 6.5,
       "ai_summary": "Legal case tracking - may have compliance implications",
       "snoozed": false
     },
@@ -87,8 +87,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-10T17:19:51",
-      "urgency": 4.0,
-      "importance": 4.0,
+      "urgency": 3.3,
+      "importance": 3.3,
       "ai_summary": "Personal BBQ pricing - low priority home item",
       "snoozed": false
     },
@@ -102,8 +102,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-10T17:19:53",
-      "urgency": 4.8,
-      "importance": 4.8,
+      "urgency": 5.7,
+      "importance": 5.7,
       "ai_summary": "Market expansion discussion - strategic growth opportunity",
       "snoozed": false
     },
@@ -132,8 +132,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-10T22:25:23",
-      "urgency": 6.0,
-      "importance": 6.0,
+      "urgency": 5.6,
+      "importance": 5.6,
       "ai_summary": "Home internet troubleshooting - moderate personal task",
       "snoozed": false
     },
@@ -147,8 +147,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-11T22:19:31",
-      "urgency": 8.0,
-      "importance": 8.0,
+      "urgency": 7.8,
+      "importance": 7.8,
       "ai_summary": "Personal dinner - possibly relationship building",
       "snoozed": false
     },
@@ -162,8 +162,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-15T11:19:34",
-      "urgency": 5.0,
-      "importance": 5.0,
+      "urgency": 4.4,
+      "importance": 4.4,
       "ai_summary": "Personal dining reservation - low priority",
       "snoozed": false
     },
@@ -177,8 +177,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-15T11:20:00",
-      "urgency": 7.0,
-      "importance": 7.0,
+      "urgency": 6.7,
+      "importance": 6.7,
       "ai_summary": "Personal dinner plans - moderate social priority",
       "snoozed": false
     },
@@ -192,8 +192,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-16T00:12:52",
-      "urgency": 7.4,
-      "importance": 7.4,
+      "urgency": 8.3,
+      "importance": 8.3,
       "ai_summary": null,
       "snoozed": false
     },
@@ -207,8 +207,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-16T00:19:44",
-      "urgency": 7.8,
-      "importance": 7.8,
+      "urgency": 8.7,
+      "importance": 8.7,
       "ai_summary": null,
       "snoozed": false
     },
@@ -222,8 +222,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-16T00:19:46",
-      "urgency": 8.3,
-      "importance": 8.3,
+      "urgency": 9.1,
+      "importance": 9.1,
       "ai_summary": null,
       "snoozed": false
     },
@@ -237,8 +237,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-16T00:19:49",
-      "urgency": 6.5,
-      "importance": 6.5,
+      "urgency": 7.4,
+      "importance": 7.4,
       "ai_summary": null,
       "snoozed": false
     },
@@ -252,8 +252,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-16T00:19:52",
-      "urgency": 9.1,
-      "importance": 9.1,
+      "urgency": 9.6,
+      "importance": 9.6,
       "ai_summary": null,
       "snoozed": false
     },
@@ -267,8 +267,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-16T00:19:54",
-      "urgency": 6.1,
-      "importance": 6.1,
+      "urgency": 7.0,
+      "importance": 7.0,
       "ai_summary": null,
       "snoozed": false
     },
@@ -282,8 +282,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-16T00:20:01",
-      "urgency": 5.2,
-      "importance": 5.2,
+      "urgency": 6.1,
+      "importance": 6.1,
       "ai_summary": null,
       "snoozed": false
     },
@@ -293,12 +293,12 @@
       "id": "9d7f999d",
       "description": "",
       "life_area": "work",
-      "category": "general",
+      "category": "OCL Red Hook",
       "tags": [],
       "done": false,
       "created": "2026-02-16T00:20:03",
-      "urgency": 8.7,
-      "importance": 8.7,
+      "urgency": 6.7,
+      "importance": 6.7,
       "ai_summary": null,
       "snoozed": false
     },
@@ -312,8 +312,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-16T12:09:34",
-      "urgency": 9.0,
-      "importance": 9.0,
+      "urgency": 8.9,
+      "importance": 8.9,
       "ai_summary": null,
       "snoozed": false
     },
@@ -327,8 +327,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-16T17:26:01",
-      "urgency": 4.3,
-      "importance": 4.3,
+      "urgency": 5.2,
+      "importance": 5.2,
       "ai_summary": null,
       "snoozed": false
     },
@@ -342,8 +342,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-16T17:26:28",
-      "urgency": 3.9,
-      "importance": 3.9,
+      "urgency": 4.8,
+      "importance": 4.8,
       "ai_summary": null,
       "snoozed": false
     },
@@ -372,8 +372,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-17T01:03:11",
-      "urgency": 3.5,
-      "importance": 3.5,
+      "urgency": 4.3,
+      "importance": 4.3,
       "ai_summary": null,
       "snoozed": false
     },
@@ -387,8 +387,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-18T00:43:47",
-      "urgency": 3.0,
-      "importance": 3.0,
+      "urgency": 3.9,
+      "importance": 3.9,
       "ai_summary": null,
       "snoozed": false
     },
@@ -402,8 +402,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-18T00:55:36",
-      "urgency": 2.6,
-      "importance": 2.6,
+      "urgency": 3.5,
+      "importance": 3.5,
       "ai_summary": null,
       "snoozed": false
     },
@@ -417,8 +417,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-18T01:10:35",
-      "urgency": 2.2,
-      "importance": 2.2,
+      "urgency": 3.0,
+      "importance": 3.0,
       "ai_summary": null,
       "snoozed": false
     },
@@ -432,8 +432,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-18T10:23:04",
-      "urgency": 1.7,
-      "importance": 1.7,
+      "urgency": 2.6,
+      "importance": 2.6,
       "ai_summary": null,
       "snoozed": false
     },
@@ -447,8 +447,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-18T10:24:05",
-      "urgency": 1.3,
-      "importance": 1.3,
+      "urgency": 2.2,
+      "importance": 2.2,
       "ai_summary": null,
       "snoozed": false
     },
@@ -462,8 +462,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-18T13:43:56",
-      "urgency": 0.9,
-      "importance": 0.9,
+      "urgency": 1.7,
+      "importance": 1.7,
       "ai_summary": null,
       "snoozed": false
     },
@@ -477,8 +477,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-22T00:18:36",
-      "urgency": 2.0,
-      "importance": 2.0,
+      "urgency": 1.1,
+      "importance": 1.1,
       "ai_summary": null,
       "snoozed": false
     },
@@ -492,8 +492,8 @@
       "tags": [],
       "done": false,
       "created": "2026-02-22T10:35:04",
-      "urgency": 0.4,
-      "importance": 0.4,
+      "urgency": 1.3,
+      "importance": 1.3,
       "ai_summary": null,
       "snoozed": false
     },
@@ -537,8 +537,38 @@
       "tags": [],
       "done": false,
       "created": "2026-02-22T17:08:50",
-      "urgency": null,
-      "importance": null,
+      "urgency": 0.9,
+      "importance": 0.9,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
+      "title": "New insurance agent and Blimy Glauber",
+      "due": "",
+      "id": "6af1bc76",
+      "description": "",
+      "life_area": "work",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-22T17:13:55",
+      "urgency": 0.4,
+      "importance": 0.4,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
+      "title": "Garlinghouse loan, Mazzuca loan",
+      "due": "",
+      "id": "ef0c90c3",
+      "description": "",
+      "life_area": "work",
+      "category": "OCL Red Hook",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-22T17:14:11",
+      "urgency": 10.0,
+      "importance": 10.0,
       "ai_summary": null,
       "snoozed": false
     }
@@ -549,6 +579,12 @@
       "id": "cat_a98ba7",
       "color": "#27ae60",
       "order": 0
+    },
+    {
+      "name": "OCL Red Hook",
+      "id": "cat_3a4912",
+      "color": "#e8b931",
+      "order": 1
     }
   ],
   "column_order": {
@@ -557,6 +593,7 @@
       "personal"
     ],
     "right": [
+      "cat-cat_3a4912",
       "cat-cat_a98ba7"
     ]
   }
