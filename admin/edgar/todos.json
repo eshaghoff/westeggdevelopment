@@ -522,8 +522,8 @@
     }
   ],
   "column_order": [
-    "personal",
     "work",
+    "personal",
     "cat-cat_a98ba7"
   ]
 }
