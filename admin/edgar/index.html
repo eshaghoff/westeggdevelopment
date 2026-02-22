@@ -77,26 +77,33 @@ body {
 .add-btn:hover { opacity: 0.85; }
 .add-btn:disabled { opacity: 0.5; cursor: default; }
 
-/* Board layout — columns */
+/* Board layout — wrapping grid */
 .board {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   padding: 16px 20px;
-  overflow-x: auto;
   min-height: calc(100vh - 120px);
   align-items: flex-start;
+  align-content: flex-start;
 }
 
 .column {
+  width: calc(50% - 12px);
   min-width: 300px;
-  max-width: 380px;
-  flex: 1 1 300px;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+@media (max-width: 700px) {
+  .column { width: 100%; min-width: 0; }
+}
+@media (min-width: 1200px) {
+  .column { width: calc(33.333% - 12px); }
 }
 
 /* Draggable column styling */
@@ -193,10 +200,16 @@ body {
 
 /* Add column card */
 .add-column-card {
-  min-width: 200px; max-width: 260px;
-  flex: 0 0 auto;
+  width: calc(50% - 12px);
+  min-width: 300px;
   display: flex; align-items: flex-start; justify-content: center;
-  padding-top: 12px;
+  padding-top: 0;
+}
+@media (max-width: 700px) {
+  .add-column-card { width: 100%; min-width: 0; }
+}
+@media (min-width: 1200px) {
+  .add-column-card { width: calc(33.333% - 12px); }
 }
 .add-category-btn {
   background: none; border: 2px dashed #ccc;
@@ -852,7 +865,7 @@ async function saveCategory() {
 async function deleteCategory(catId) {
   const cat = currentCategories.find(c => c.id === catId);
   if (!cat) return;
-  if (!confirm(`Delete "${cat.name}"? Tasks will move back to Work/Personal.`)) return;
+  if (!confirm(`Delete "${cat.name}"? Tasks will move back to General/Personal.`)) return;
   if (!apiOnline) { showToast('Offline'); return; }
 
   try {
