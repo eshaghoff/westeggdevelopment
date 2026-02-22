@@ -240,6 +240,21 @@ body {
 .empty-state { text-align: center; padding: 20px 10px; color: #bbb; font-size: 11px; }
 .loading { text-align: center; padding: 40px; color: #999; font-size: 13px; }
 
+/* Grid spacer — invisible placeholder that keeps the grid flowing */
+.grid-spacer {
+  min-height: 60px;
+  border: 2px dashed transparent;
+  border-radius: 10px;
+  transition: border-color 0.2s, background 0.2s;
+}
+/* When dragging columns, highlight spacers as drop targets */
+.grid-spacer.column-ghost {
+  border-color: #e8b931;
+  background: #fdf6e0 !important;
+  opacity: 1 !important;
+  min-height: 60px;
+}
+
 /* Add column card */
 .add-column-card {
   display: flex; align-items: flex-start; justify-content: center;
@@ -552,20 +567,60 @@ function renderBoard(work, personal, categories = [], columnOrder = []) {
     renderOrder = allColIds;
   }
 
-  // Render columns in order
-  for (const colId of renderOrder) {
-    if (columnBuilders[colId]) {
-      board.appendChild(columnBuilders[colId]());
+  // Build ordered list of items: columns and spacers
+  // column_order can contain 'spacer' entries for empty grid cells
+  const itemOrder = [];
+  if (columnOrder.length > 0) {
+    columnOrder.forEach(id => {
+      if (id === '__spacer__') {
+        itemOrder.push({ type: 'spacer' });
+      } else if (columnBuilders[id]) {
+        itemOrder.push({ type: 'column', id });
+      }
+    });
+    // Append any new columns not in saved order
+    allColIds.forEach(id => {
+      if (!itemOrder.some(item => item.type === 'column' && item.id === id)) {
+        itemOrder.push({ type: 'column', id });
+      }
+    });
+  } else {
+    renderOrder.forEach(id => itemOrder.push({ type: 'column', id }));
+  }
+
+  // Render items
+  for (const item of itemOrder) {
+    if (item.type === 'spacer') {
+      const spacer = document.createElement('div');
+      spacer.className = 'grid-spacer';
+      spacer.dataset.colId = '__spacer__';
+      board.appendChild(spacer);
+    } else if (columnBuilders[item.id]) {
+      board.appendChild(columnBuilders[item.id]());
     }
   }
 
-  // "+ New Project" card
+  // "+ New Project" card — always last, outside drag system
   if (apiOnline) {
     const addCard = document.createElement('div');
     addCard.className = 'add-column-card';
     addCard.id = 'add-column-card';
     addCard.innerHTML = '<button class="add-category-btn" onclick="openAddCategory()">+ New Project</button>';
     board.appendChild(addCard);
+  }
+
+  // Auto-add spacer if odd number of columns so every row is full
+  const colCount = board.querySelectorAll('.column').length;
+  if (colCount % 2 === 1) {
+    const spacer = document.createElement('div');
+    spacer.className = 'grid-spacer';
+    spacer.dataset.colId = '__spacer__';
+    const addCard = document.getElementById('add-column-card');
+    if (addCard) {
+      board.insertBefore(spacer, addCard);
+    } else {
+      board.appendChild(spacer);
+    }
   }
 
   initTaskSortables(categories);
@@ -687,10 +742,56 @@ function initColumnSortable() {
     handle: '.col-drag-handle',
     ghostClass: 'column-ghost',
     chosenClass: 'column-chosen',
-    draggable: '.column',
+    draggable: '.column, .grid-spacer',
     filter: '.add-column-card',
-    onEnd: () => saveColumnOrder(),
+    onEnd: () => {
+      cleanupSpacers();
+      saveColumnOrder();
+    },
   });
+}
+
+// Ensure spacers fill gaps so every row has 2 items.
+// Remove extra trailing spacers but keep interior ones.
+function cleanupSpacers() {
+  const board = document.getElementById('board');
+  const items = [...board.querySelectorAll('.column, .grid-spacer')];
+  // Remove all trailing spacers
+  while (items.length > 0 && items[items.length - 1].classList.contains('grid-spacer')) {
+    items[items.length - 1].remove();
+    items.pop();
+  }
+  // If odd number of items, add one spacer at the end to fill the row
+  const remaining = board.querySelectorAll('.column, .grid-spacer');
+  if (remaining.length % 2 === 1) {
+    const spacer = document.createElement('div');
+    spacer.className = 'grid-spacer';
+    spacer.dataset.colId = '__spacer__';
+    // Insert before add-column-card if it exists
+    const addCard = document.getElementById('add-column-card');
+    if (addCard) {
+      board.insertBefore(spacer, addCard);
+    } else {
+      board.appendChild(spacer);
+    }
+  }
+}
+
+// Add a spacer to the board (called by double-clicking empty grid area or via context menu)
+function addSpacer() {
+  const board = document.getElementById('board');
+  const spacer = document.createElement('div');
+  spacer.className = 'grid-spacer';
+  spacer.dataset.colId = '__spacer__';
+  const addCard = document.getElementById('add-column-card');
+  if (addCard) {
+    board.insertBefore(spacer, addCard);
+  } else {
+    board.appendChild(spacer);
+  }
+  // Reinit sortable so new spacer is draggable
+  initColumnSortable();
+  saveColumnOrder();
 }
 
 async function saveOrder() {
@@ -724,11 +825,11 @@ async function saveOrder() {
 
 async function saveColumnOrder() {
   if (!apiOnline) return;
-  // Read the new column order from the DOM
-  const columns = document.querySelectorAll('.column');
+  // Read the new column order from the DOM — includes spacers
+  const items = document.querySelectorAll('.column, .grid-spacer');
   const order = [];
-  columns.forEach(col => {
-    const colId = col.dataset.colId;
+  items.forEach(item => {
+    const colId = item.dataset.colId;
     if (colId) order.push(colId);
   });
 
