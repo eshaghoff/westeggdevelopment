@@ -117,7 +117,7 @@ body {
   padding: 3px 10px; border-radius: 4px; font-size: 11px;
   font-weight: 700; letter-spacing: 0.5px; white-space: nowrap;
 }
-.col-badge.work { background: #e8b931; color: #1a1a2e; }
+.col-badge.general { background: #e8b931; color: #1a1a2e; }
 .col-badge.personal { background: #4a90d9; color: #fff; }
 .col-badge.category { color: #fff; }
 .col-count { color: #999; font-size: 11px; white-space: nowrap; }
@@ -328,6 +328,7 @@ let currentCategories = [];
 const CAT_COLORS = ['#e8b931','#4a90d9','#27ae60','#e74c3c','#9b59b6','#e67e22','#1abc9c','#34495e'];
 let selectedCatColor = CAT_COLORS[0];
 let columnSortable = null;
+let currentColumnOrder = [];
 
 // Auto-detect API URL from config.json (permanent tunnel URLs)
 async function loadConfig() {
@@ -434,7 +435,8 @@ async function loadFromApi() {
     const res = await apiFetch('/api/todos');
     const data = await res.json();
     currentCategories = data.categories || [];
-    renderBoard(data.work, data.personal, currentCategories);
+    currentColumnOrder = data.column_order || [];
+    renderBoard(data.work, data.personal, currentCategories, currentColumnOrder);
     if (data.last_scored) {
       const d = new Date(data.last_scored);
       document.getElementById('last-synced').textContent =
@@ -456,7 +458,8 @@ async function loadFromJson() {
     work.sort((a, b) => sortKey(a) - sortKey(b));
     personal.sort((a, b) => sortKey(a) - sortKey(b));
     currentCategories = data.categories || [];
-    renderBoard(work, personal, currentCategories);
+    currentColumnOrder = data.column_order || [];
+    renderBoard(work, personal, currentCategories, currentColumnOrder);
     if (data.last_scored) {
       const d = new Date(data.last_scored);
       document.getElementById('last-synced').textContent =
@@ -468,7 +471,7 @@ async function loadFromJson() {
 }
 
 // --- Rendering ---
-function renderBoard(work, personal, categories = []) {
+function renderBoard(work, personal, categories = [], columnOrder = []) {
   const board = document.getElementById('board');
   board.innerHTML = '';
 
@@ -477,23 +480,44 @@ function renderBoard(work, personal, categories = []) {
   const uncatPersonal = personal.filter(t => !catNames.includes(t.category));
   const allTasks = [...work, ...personal];
 
-  // Work column
-  board.appendChild(buildColumn('work', 'WORK', 'work', null, uncatWork, false));
+  // Build a map of column id → column element
+  const catMap = {};
+  categories.forEach(c => { catMap[c.id] = c; });
 
-  // Personal column
-  board.appendChild(buildColumn('personal', 'PERSONAL', 'personal', null, uncatPersonal, false));
+  const columnBuilders = {
+    'work': () => buildColumn('work', 'GENERAL', 'general', null, uncatWork),
+    'personal': () => buildColumn('personal', 'PERSONAL', 'personal', null, uncatPersonal),
+  };
+  categories.forEach(cat => {
+    columnBuilders[`cat-${cat.id}`] = () => {
+      const catTasks = allTasks.filter(t => t.category === cat.name);
+      return buildColumn(`cat-${cat.id}`, cat.name.toUpperCase(), 'category', cat, catTasks);
+    };
+  });
 
-  // Category columns (sorted by order)
-  categories.sort((a, b) => a.order - b.order);
-  for (const cat of categories) {
-    const catTasks = allTasks.filter(t => t.category === cat.name);
-    board.appendChild(buildColumn(`cat-${cat.id}`, cat.name.toUpperCase(), 'category', cat, catTasks, true));
+  // Determine column render order
+  const allColIds = ['work', 'personal', ...categories.map(c => `cat-${c.id}`)];
+  let renderOrder;
+  if (columnOrder.length > 0) {
+    // Use saved order, then append any new columns not in the saved order
+    renderOrder = columnOrder.filter(id => columnBuilders[id]);
+    allColIds.forEach(id => { if (!renderOrder.includes(id)) renderOrder.push(id); });
+  } else {
+    renderOrder = allColIds;
+  }
+
+  // Render columns in order
+  for (const colId of renderOrder) {
+    if (columnBuilders[colId]) {
+      board.appendChild(columnBuilders[colId]());
+    }
   }
 
   // "+ New Project" card
   if (apiOnline) {
     const addCard = document.createElement('div');
     addCard.className = 'add-column-card';
+    addCard.id = 'add-column-card';
     addCard.innerHTML = '<button class="add-category-btn" onclick="openAddCategory()">+ New Project</button>';
     board.appendChild(addCard);
   }
@@ -502,7 +526,7 @@ function renderBoard(work, personal, categories = []) {
   initColumnSortable();
 }
 
-function buildColumn(id, label, type, cat, tasks, draggable) {
+function buildColumn(id, label, type, cat, tasks) {
   const col = document.createElement('div');
   col.className = 'column';
   if (cat) col.dataset.catId = cat.id;
@@ -511,10 +535,7 @@ function buildColumn(id, label, type, cat, tasks, draggable) {
   const header = document.createElement('div');
   header.className = 'col-header';
 
-  let inner = '';
-  if (draggable) {
-    inner += '<span class="col-drag-handle">&#x2630;</span>';
-  }
+  let inner = '<span class="col-drag-handle">&#x2630;</span>';
 
   if (type === 'category' && cat) {
     inner += `<span class="col-badge category" style="background:${cat.color}">${escapeHtml(label)}</span>`;
@@ -609,8 +630,9 @@ function initColumnSortable() {
     handle: '.col-drag-handle',
     ghostClass: 'column-ghost',
     chosenClass: 'column-chosen',
-    draggable: '.column[data-cat-id]',
-    onEnd: () => saveCategoryOrder(),
+    draggable: '.column',
+    filter: '.add-column-card',
+    onEnd: () => saveColumnOrder(),
   });
 }
 
@@ -643,26 +665,26 @@ async function saveOrder() {
   }
 }
 
-async function saveCategoryOrder() {
+async function saveColumnOrder() {
   if (!apiOnline) return;
   // Read the new column order from the DOM
-  const columns = document.querySelectorAll('.column[data-cat-id]');
-  const orderUpdates = [];
-  columns.forEach((col, i) => {
-    orderUpdates.push({ id: col.dataset.catId, order: i });
+  const columns = document.querySelectorAll('.column');
+  const order = [];
+  columns.forEach(col => {
+    const colId = col.dataset.colId;
+    if (colId) order.push(colId);
   });
 
-  // Update each category's order
-  for (const upd of orderUpdates) {
-    try {
-      await apiFetch(`/api/categories/${upd.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order: upd.order }),
-      });
-    } catch (e) {}
+  try {
+    await apiFetch('/api/column-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order }),
+    });
+    showToast('Columns reordered');
+  } catch (e) {
+    showToast('Failed to save column order');
   }
-  showToast('Columns reordered');
 }
 
 function updateRanks() {
