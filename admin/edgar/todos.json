@@ -512,5 +512,25 @@
       "ai_summary": null,
       "snoozed": false
     }
+  ],
+  "categories": [
+    {
+      "name": "110 Northern",
+      "id": "cat_a98ba7",
+      "color": "#27ae60",
+      "order": 0
+    },
+    {
+      "name": "Pickwood",
+      "id": "cat_364718",
+      "color": "#9b59b6",
+      "order": 1
+    }
+  ],
+  "column_order": [
+    "work",
+    "cat-cat_a98ba7",
+    "personal",
+    "cat-cat_364718"
   ]
 }
