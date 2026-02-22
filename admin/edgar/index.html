@@ -90,7 +90,6 @@ body {
 
 .column {
   width: calc(50% - 8px);
-  min-width: 300px;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -100,7 +99,7 @@ body {
 }
 
 @media (max-width: 700px) {
-  .column { width: 100%; min-width: 0; }
+  .column { width: 100%; }
 }
 
 /* Draggable column styling */
@@ -198,12 +197,11 @@ body {
 /* Add column card */
 .add-column-card {
   width: calc(50% - 8px);
-  min-width: 300px;
   display: flex; align-items: flex-start; justify-content: center;
   padding-top: 0;
 }
 @media (max-width: 700px) {
-  .add-column-card { width: 100%; min-width: 0; }
+  .add-column-card { width: 100%; }
 }
 .add-category-btn {
   background: none; border: 2px dashed #ccc;
