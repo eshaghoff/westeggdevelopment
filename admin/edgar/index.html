@@ -466,11 +466,8 @@ function updateDate() {
   document.getElementById('date-text').textContent = now.toLocaleDateString('en-US', opts);
 }
 
-function sortKey(t) {
-  if (t.urgency != null && t.importance != null)
-    return -(0.6 * t.urgency + 0.4 * t.importance);
-  return 0;
-}
+// Tasks are returned by the API in stored order (user-arranged).
+// No client-side priority sorting.
 
 // --- Data loading ---
 async function loadData() {
@@ -507,8 +504,6 @@ async function loadFromJson() {
     const open = data.todos.filter(t => !t.done);
     const work = open.filter(t => t.life_area === 'work');
     const personal = open.filter(t => t.life_area === 'personal');
-    work.sort((a, b) => sortKey(a) - sortKey(b));
-    personal.sort((a, b) => sortKey(a) - sortKey(b));
     currentCategories = data.categories || [];
     currentColumnOrder = data.column_order || [];
     renderBoard(work, personal, currentCategories, currentColumnOrder);
