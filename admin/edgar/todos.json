@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_scored": "2026-02-22T00:13:26",
+  "last_scored": "2026-02-22T00:18:53",
   "todos": [
     {
       "title": "List Pickwood Ln house",
@@ -537,6 +537,21 @@
       "tags": [],
       "done": false,
       "created": "2026-02-22T00:13:11",
+      "urgency": null,
+      "importance": null,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
+      "title": "Pick up dry cleaning",
+      "due": "",
+      "id": "38f756bd",
+      "description": "",
+      "life_area": "personal",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-22T00:18:36",
       "urgency": null,
       "importance": null,
       "ai_summary": null,
