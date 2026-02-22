@@ -77,18 +77,25 @@ body {
 .add-btn:hover { opacity: 0.85; }
 .add-btn:disabled { opacity: 0.5; cursor: default; }
 
-/* Board layout — snap grid like a bulletin board */
+/* Board layout — two independent columns */
 .board {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: 16px;
   padding: 16px 20px;
   min-height: calc(100vh - 120px);
-  align-items: start;
+  align-items: flex-start;
+}
+.board-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 120px;
 }
 
 @media (max-width: 700px) {
-  .board { grid-template-columns: 1fr; }
+  .board { flex-direction: column; }
+  .board-column { width: 100%; }
 }
 
 .column {
@@ -240,25 +247,9 @@ body {
 .empty-state { text-align: center; padding: 20px 10px; color: #bbb; font-size: 11px; }
 .loading { text-align: center; padding: 40px; color: #999; font-size: 13px; }
 
-/* Grid spacer — invisible placeholder that keeps the grid flowing */
-.grid-spacer {
-  min-height: 60px;
-  border: 2px dashed transparent;
-  border-radius: 10px;
-  transition: border-color 0.2s, background 0.2s;
-}
-/* When dragging columns, highlight spacers as drop targets */
-.grid-spacer.column-ghost {
-  border-color: #e8b931;
-  background: #fdf6e0 !important;
-  opacity: 1 !important;
-  min-height: 60px;
-}
-
-/* Add column card (sits inside a grid-spacer) */
+/* Add column card */
 .add-column-card {
   display: flex; align-items: flex-start; justify-content: center;
-  padding-top: 8px;
 }
 .add-category-btn {
   background: none; border: 2px dashed #ccc;
@@ -389,7 +380,6 @@ let apiOnline = false;
 let currentCategories = [];
 const CAT_COLORS = ['#e8b931','#4a90d9','#27ae60','#e74c3c','#9b59b6','#e67e22','#1abc9c','#34495e'];
 let selectedCatColor = CAT_COLORS[0];
-let columnSortable = null;
 let currentColumnOrder = [];
 
 // Auto-detect API URL from config.json (permanent tunnel URLs)
@@ -542,10 +532,6 @@ function renderBoard(work, personal, categories = [], columnOrder = []) {
   const uncatPersonal = personal.filter(t => !catNames.includes(t.category));
   const allTasks = [...work, ...personal];
 
-  // Build a map of column id → column element
-  const catMap = {};
-  categories.forEach(c => { catMap[c.id] = c; });
-
   const columnBuilders = {
     'work': () => buildColumn('work', 'GENERAL', 'general', null, uncatWork),
     'personal': () => buildColumn('personal', 'PERSONAL', 'personal', null, uncatPersonal),
@@ -557,62 +543,67 @@ function renderBoard(work, personal, categories = [], columnOrder = []) {
     };
   });
 
-  // Determine column render order
   const allColIds = ['work', 'personal', ...categories.map(c => `cat-${c.id}`)];
-  let renderOrder;
-  if (columnOrder.length > 0) {
-    // Use saved order, then append any new columns not in the saved order
-    renderOrder = columnOrder.filter(id => columnBuilders[id]);
-    allColIds.forEach(id => { if (!renderOrder.includes(id)) renderOrder.push(id); });
-  } else {
-    renderOrder = allColIds;
-  }
 
-  // Build ordered list of items: columns and spacers
-  // column_order can contain 'spacer' entries for empty grid cells
-  const itemOrder = [];
-  if (columnOrder.length > 0) {
-    columnOrder.forEach(id => {
-      if (id === '__spacer__') {
-        itemOrder.push({ type: 'spacer' });
-      } else if (columnBuilders[id]) {
-        itemOrder.push({ type: 'column', id });
-      }
-    });
-    // Append any new columns not in saved order
+  // Determine left/right column assignments
+  let leftIds, rightIds;
+  if (columnOrder && columnOrder.left && columnOrder.right) {
+    // New format: { left: [...], right: [...] }
+    leftIds = columnOrder.left.filter(id => columnBuilders[id]);
+    rightIds = columnOrder.right.filter(id => columnBuilders[id]);
+    // Append any new panels not in either list — alternate left/right
     allColIds.forEach(id => {
-      if (!itemOrder.some(item => item.type === 'column' && item.id === id)) {
-        itemOrder.push({ type: 'column', id });
+      if (!leftIds.includes(id) && !rightIds.includes(id)) {
+        if (leftIds.length <= rightIds.length) leftIds.push(id);
+        else rightIds.push(id);
       }
     });
+  } else if (Array.isArray(columnOrder) && columnOrder.length > 0) {
+    // Legacy flat array format — convert: odd indices right, even left
+    const ordered = columnOrder.filter(id => id !== '__spacer__' && columnBuilders[id]);
+    allColIds.forEach(id => { if (!ordered.includes(id)) ordered.push(id); });
+    leftIds = []; rightIds = [];
+    ordered.forEach((id, i) => {
+      if (i % 2 === 0) leftIds.push(id);
+      else rightIds.push(id);
+    });
   } else {
-    renderOrder.forEach(id => itemOrder.push({ type: 'column', id }));
+    // Default: first panel left, rest alternate
+    leftIds = []; rightIds = [];
+    allColIds.forEach((id, i) => {
+      if (i % 2 === 0) leftIds.push(id);
+      else rightIds.push(id);
+    });
   }
 
-  // Render items (columns and any saved spacers)
-  for (const item of itemOrder) {
-    if (item.type === 'spacer') {
-      board.appendChild(createSpacer());
-    } else if (columnBuilders[item.id]) {
-      board.appendChild(columnBuilders[item.id]());
-    }
-  }
+  // Create two board columns
+  const leftCol = document.createElement('div');
+  leftCol.className = 'board-column';
+  leftCol.id = 'board-left';
 
-  // Ensure even number of grid items — add spacer if odd
-  const colAndSpacerCount = board.querySelectorAll('.column, .grid-spacer').length;
-  if (colAndSpacerCount % 2 === 1) {
-    board.appendChild(createSpacer());
-  }
+  const rightCol = document.createElement('div');
+  rightCol.className = 'board-column';
+  rightCol.id = 'board-right';
 
-  // Always add one more spacer row with "+ New Project" button
+  // Render panels into their columns
+  leftIds.forEach(id => {
+    if (columnBuilders[id]) leftCol.appendChild(columnBuilders[id]());
+  });
+  rightIds.forEach(id => {
+    if (columnBuilders[id]) rightCol.appendChild(columnBuilders[id]());
+  });
+
+  // "+ New Project" button goes at the bottom of whichever column is shorter
   if (apiOnline) {
-    const addSpacer = createSpacer();
-    addSpacer.innerHTML = '<button class="add-category-btn" onclick="openAddCategory()">+ New Project</button>';
-    addSpacer.classList.add('add-column-card');
-    board.appendChild(addSpacer);
-    // Pair it with an empty spacer
-    board.appendChild(createSpacer());
+    const addCard = document.createElement('div');
+    addCard.className = 'add-column-card';
+    addCard.innerHTML = '<button class="add-category-btn" onclick="openAddCategory()">+ New Project</button>';
+    const target = leftCol.children.length <= rightCol.children.length ? leftCol : rightCol;
+    target.appendChild(addCard);
   }
+
+  board.appendChild(leftCol);
+  board.appendChild(rightCol);
 
   initTaskSortables(categories);
   initColumnSortable();
@@ -694,13 +685,6 @@ function createTaskRow(task, rank) {
   return row;
 }
 
-function createSpacer() {
-  const spacer = document.createElement('div');
-  spacer.className = 'grid-spacer';
-  spacer.dataset.colId = '__spacer__';
-  return spacer;
-}
-
 // --- Drag and drop: tasks within/across columns ---
 function initTaskSortables(categories = []) {
   const sectionIds = ['work', 'personal', ...categories.map(c => `cat-${c.id}`)];
@@ -731,45 +715,27 @@ function initTaskSortables(categories = []) {
   });
 }
 
-// --- Drag and drop: reorder columns ---
+// --- Drag and drop: reorder panels between left/right columns ---
+let leftSortable = null, rightSortable = null;
 function initColumnSortable() {
-  const board = document.getElementById('board');
-  if (columnSortable) columnSortable.destroy();
-  columnSortable = new Sortable(board, {
+  if (leftSortable) leftSortable.destroy();
+  if (rightSortable) rightSortable.destroy();
+
+  const opts = {
+    group: 'panels',
     animation: 200,
     handle: '.col-drag-handle',
     ghostClass: 'column-ghost',
     chosenClass: 'column-chosen',
-    draggable: '.column, .grid-spacer:not(.add-column-card)',
+    draggable: '.column',
     filter: '.add-column-card',
-    onEnd: () => {
-      cleanupSpacers();
-      saveColumnOrder();
-    },
-  });
-}
+    onEnd: () => saveColumnOrder(),
+  };
 
-// Ensure spacers fill gaps so every row has 2 items.
-// Only operates on the draggable area (excludes add-button row at bottom).
-function cleanupSpacers() {
-  const board = document.getElementById('board');
-  // Get only the draggable items (columns + plain spacers, not add-button)
-  const items = [...board.querySelectorAll('.column, .grid-spacer:not(.add-column-card)')];
-  // Remove trailing spacers from draggable area
-  while (items.length > 0 && items[items.length - 1].classList.contains('grid-spacer')) {
-    items[items.length - 1].remove();
-    items.pop();
-  }
-  // If odd number left, add a spacer before the add-button row
-  if (items.length % 2 === 1) {
-    const addRow = board.querySelector('.add-column-card');
-    const spacer = createSpacer();
-    if (addRow) {
-      board.insertBefore(spacer, addRow);
-    } else {
-      board.appendChild(spacer);
-    }
-  }
+  const leftEl = document.getElementById('board-left');
+  const rightEl = document.getElementById('board-right');
+  if (leftEl) leftSortable = new Sortable(leftEl, opts);
+  if (rightEl) rightSortable = new Sortable(rightEl, opts);
 }
 
 async function saveOrder() {
@@ -803,25 +769,19 @@ async function saveOrder() {
 
 async function saveColumnOrder() {
   if (!apiOnline) return;
-  // Read the new column order from the DOM — includes interior spacers but not add-button row
-  const items = document.querySelectorAll('.column, .grid-spacer:not(.add-column-card)');
-  const order = [];
-  items.forEach(item => {
-    const colId = item.dataset.colId;
-    if (colId) order.push(colId);
-  });
-  // Strip trailing spacers from saved order
-  while (order.length > 0 && order[order.length - 1] === '__spacer__') order.pop();
+  // Read left/right column assignments from the DOM
+  const leftIds = [...document.querySelectorAll('#board-left .column')].map(c => c.dataset.colId);
+  const rightIds = [...document.querySelectorAll('#board-right .column')].map(c => c.dataset.colId);
 
   try {
     await apiFetch('/api/column-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order }),
+      body: JSON.stringify({ order: { left: leftIds, right: rightIds } }),
     });
-    showToast('Columns reordered');
+    showToast('Layout saved');
   } catch (e) {
-    showToast('Failed to save column order');
+    showToast('Failed to save layout');
   }
 }
 
