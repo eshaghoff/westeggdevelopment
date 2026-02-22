@@ -12700,11 +12700,12 @@ function getCountThreshold(zoom) {
   const divisor = isFiltered ? 4 : 1;
 
   let threshold;
-  if (zoom <= 10)       threshold = 400;
-  else if (zoom === 11) threshold = 200;
-  else if (zoom === 12) threshold = 100;
-  else if (zoom === 13) threshold = 25;
-  else if (zoom === 14) threshold = 10;
+  if (zoom <= 9)        threshold = 9999;  // hide all
+  else if (zoom === 10) threshold = 700;   // ~1 label
+  else if (zoom === 11) threshold = 550;   // ~8 labels
+  else if (zoom === 12) threshold = 400;   // ~54 labels
+  else if (zoom === 13) threshold = 100;   // ~108 labels
+  else if (zoom === 14) threshold = 25;
   else                  threshold = 0;
 
   return Math.floor(threshold / divisor);
