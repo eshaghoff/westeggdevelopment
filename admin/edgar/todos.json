@@ -536,5 +536,9 @@
       "order": 0
     }
   ],
-  "column_order": []
+  "column_order": [
+    "personal",
+    "work",
+    "cat-cat_5cc032"
+  ]
 }
