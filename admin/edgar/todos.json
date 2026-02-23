@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_scored": "2026-02-23T01:00:29",
+  "last_scored": "2026-02-23T01:30:18",
   "todos": [
     {
       "title": "Corner spot lease and cash",
@@ -578,16 +578,17 @@
       "order": 2
     }
   ],
-  "column_order": {
-    "left": [
+  "column_order": [
+    [
       "work",
-      "personal",
-      "cat-cat_cc480c"
+      "personal"
     ],
-    "right": [
-      "work",
-      "cat-cat_80eb20",
+    [
+      "cat-cat_cc480c",
+      "cat-cat_80eb20"
+    ],
+    [
       "cat-cat_bc039a"
     ]
-  }
+  ]
 }
