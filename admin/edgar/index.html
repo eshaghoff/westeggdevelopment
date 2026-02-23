@@ -144,12 +144,38 @@ body {
   user-select: none; line-height: 1; margin-right: 2px;
 }
 .col-drag-handle:active { cursor: grabbing; }
-.category-actions { margin-left: auto; display: flex; gap: 2px; }
+.col-actions { margin-left: auto; display: flex; gap: 2px; align-items: center; }
+.col-add-btn {
+  border: none; background: none; cursor: pointer;
+  font-size: 16px; color: #bbb; padding: 0 4px; line-height: 1;
+  font-weight: 700;
+}
+.col-add-btn:hover { color: #e8b931; }
+.category-actions { display: flex; gap: 2px; }
 .category-actions button {
   border: none; background: none; cursor: pointer;
   font-size: 12px; color: #bbb; padding: 2px 4px; line-height: 1;
 }
 .category-actions button:hover { color: #e8b931; }
+
+/* Inline add-task row */
+.inline-add {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 8px; border-bottom: 1px solid #eee;
+}
+.inline-add input {
+  flex: 1; padding: 5px 10px; border: 1.5px solid #ddd;
+  border-radius: 5px; font-size: 12px; font-family: inherit;
+  outline: none;
+}
+.inline-add input:focus { border-color: #e8b931; }
+.inline-add button {
+  border: none; padding: 4px 10px; border-radius: 5px;
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  font-family: inherit;
+}
+.inline-add .inline-save { background: #e8b931; color: #1a1a2e; }
+.inline-add .inline-cancel { background: #eee; color: #666; }
 
 /* Task list inside columns */
 .task-list {
@@ -615,6 +641,11 @@ function buildColumn(id, label, type, cat, tasks) {
   const header = document.createElement('div');
   header.className = 'col-header';
 
+  // Determine the category name for inline add (null for general/personal panels)
+  const catName = cat ? cat.name : null;
+  // life_area for general = "work", for personal = "personal", for categories = "work" (default)
+  const lifeArea = type === 'personal' ? 'personal' : 'work';
+
   let inner = '<span class="col-drag-handle">&#x2630;</span>';
 
   if (type === 'category' && cat) {
@@ -624,6 +655,8 @@ function buildColumn(id, label, type, cat, tasks) {
   }
   inner += `<span class="col-count">${tasks.length}</span>`;
 
+  inner += `<div class="col-actions">`;
+  inner += `<button class="col-add-btn" onclick="openInlineAdd('${id}')" title="Add task">+</button>`;
   if (cat) {
     inner += `
       <div class="category-actions">
@@ -631,8 +664,24 @@ function buildColumn(id, label, type, cat, tasks) {
         <button onclick="deleteCategory('${cat.id}')" title="Delete">&times;</button>
       </div>`;
   }
+  inner += `</div>`;
+
   header.innerHTML = inner;
   col.appendChild(header);
+
+  // Inline add-task row (hidden by default)
+  const addRow = document.createElement('div');
+  addRow.className = 'inline-add';
+  addRow.id = `inline-add-${id}`;
+  addRow.style.display = 'none';
+  addRow.dataset.lifeArea = lifeArea;
+  if (catName) addRow.dataset.category = catName;
+  addRow.innerHTML = `
+    <input type="text" placeholder="New task..." onkeydown="if(event.key==='Enter') submitInlineAdd('${id}'); if(event.key==='Escape') closeInlineAdd('${id}');">
+    <button class="inline-save" onclick="submitInlineAdd('${id}')">Add</button>
+    <button class="inline-cancel" onclick="closeInlineAdd('${id}')">&#x2715;</button>
+  `;
+  col.appendChild(addRow);
 
   const list = document.createElement('ul');
   list.className = 'task-list';
@@ -854,6 +903,62 @@ async function markDone(id) {
     }
     loadData();
   }, 300);
+}
+
+// --- Inline add task to specific panel ---
+function openInlineAdd(colId) {
+  // Close any other open inline adds
+  document.querySelectorAll('.inline-add').forEach(r => r.style.display = 'none');
+  const row = document.getElementById(`inline-add-${colId}`);
+  if (!row) return;
+  row.style.display = 'flex';
+  const input = row.querySelector('input');
+  input.value = '';
+  setTimeout(() => input.focus(), 50);
+}
+
+function closeInlineAdd(colId) {
+  const row = document.getElementById(`inline-add-${colId}`);
+  if (row) row.style.display = 'none';
+}
+
+async function submitInlineAdd(colId) {
+  const row = document.getElementById(`inline-add-${colId}`);
+  if (!row) return;
+  const input = row.querySelector('input');
+  const text = input.value.trim();
+  if (!text) return;
+  if (!apiOnline) { showToast('Offline — cannot add tasks'); return; }
+
+  const lifeArea = row.dataset.lifeArea || 'work';
+  const category = row.dataset.category || null;
+
+  const saveBtn = row.querySelector('.inline-save');
+  saveBtn.textContent = '...';
+  input.disabled = true;
+
+  try {
+    const body = { text, life_area: lifeArea };
+    if (category) body.category = category;
+    const res = await apiFetch('/api/todos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (res.ok) {
+      showToast('Task added');
+      closeInlineAdd(colId);
+      setTimeout(() => loadFromApi(), 1500);
+    } else {
+      const data = await res.json();
+      showToast(data.error || 'Failed to add task');
+    }
+  } catch (e) {
+    showToast('Failed to add task');
+  } finally {
+    saveBtn.textContent = 'Add';
+    input.disabled = false;
+  }
 }
 
 // --- Category management ---
