@@ -77,7 +77,7 @@ body {
 .add-btn:hover { opacity: 0.85; }
 .add-btn:disabled { opacity: 0.5; cursor: default; }
 
-/* Board layout — two independent columns */
+/* Board layout — up to 3 independent columns */
 .board {
   display: flex;
   gap: 16px;
@@ -518,6 +518,8 @@ async function loadFromJson() {
 }
 
 // --- Rendering ---
+const MAX_BOARD_COLS = 3;
+
 function renderBoard(work, personal, categories = [], columnOrder = []) {
   const board = document.getElementById('board');
   board.innerHTML = '';
@@ -540,65 +542,65 @@ function renderBoard(work, personal, categories = [], columnOrder = []) {
 
   const allColIds = ['work', 'personal', ...categories.map(c => `cat-${c.id}`)];
 
-  // Determine left/right column assignments
-  let leftIds, rightIds;
-  if (columnOrder && columnOrder.left && columnOrder.right) {
-    // New format: { left: [...], right: [...] }
-    leftIds = columnOrder.left.filter(id => columnBuilders[id]);
-    rightIds = columnOrder.right.filter(id => columnBuilders[id]);
-    // Append any new panels not in either list — alternate left/right
-    allColIds.forEach(id => {
-      if (!leftIds.includes(id) && !rightIds.includes(id)) {
-        if (leftIds.length <= rightIds.length) leftIds.push(id);
-        else rightIds.push(id);
-      }
-    });
+  // Determine board-column assignments (up to MAX_BOARD_COLS)
+  let colGroups; // array of arrays, e.g. [["work"], ["personal","cat-x"], ["cat-y"]]
+
+  if (Array.isArray(columnOrder) && columnOrder.length > 0 && Array.isArray(columnOrder[0])) {
+    // Current format: array of arrays
+    colGroups = columnOrder.map(g => g.filter(id => columnBuilders[id]));
+    // Remove empty trailing groups
+    while (colGroups.length > 1 && colGroups[colGroups.length - 1].length === 0) colGroups.pop();
+  } else if (columnOrder && columnOrder.left && columnOrder.right) {
+    // Previous format: { left: [...], right: [...] }
+    colGroups = [
+      columnOrder.left.filter(id => columnBuilders[id]),
+      columnOrder.right.filter(id => columnBuilders[id]),
+    ];
   } else if (Array.isArray(columnOrder) && columnOrder.length > 0) {
-    // Legacy flat array format — convert: odd indices right, even left
+    // Legacy flat array
     const ordered = columnOrder.filter(id => id !== '__spacer__' && columnBuilders[id]);
     allColIds.forEach(id => { if (!ordered.includes(id)) ordered.push(id); });
-    leftIds = []; rightIds = [];
-    ordered.forEach((id, i) => {
-      if (i % 2 === 0) leftIds.push(id);
-      else rightIds.push(id);
-    });
+    colGroups = [[], []];
+    ordered.forEach((id, i) => colGroups[i % 2].push(id));
   } else {
-    // Default: first panel left, rest alternate
-    leftIds = []; rightIds = [];
-    allColIds.forEach((id, i) => {
-      if (i % 2 === 0) leftIds.push(id);
-      else rightIds.push(id);
-    });
+    // Default: round-robin into 2 columns
+    colGroups = [[], []];
+    allColIds.forEach((id, i) => colGroups[i % 2].push(id));
   }
 
-  // Create two board columns
-  const leftCol = document.createElement('div');
-  leftCol.className = 'board-column';
-  leftCol.id = 'board-left';
+  // Ensure at least 2 board columns
+  while (colGroups.length < 2) colGroups.push([]);
 
-  const rightCol = document.createElement('div');
-  rightCol.className = 'board-column';
-  rightCol.id = 'board-right';
-
-  // Render panels into their columns
-  leftIds.forEach(id => {
-    if (columnBuilders[id]) leftCol.appendChild(columnBuilders[id]());
-  });
-  rightIds.forEach(id => {
-    if (columnBuilders[id]) rightCol.appendChild(columnBuilders[id]());
+  // Place any new panels not in any group into the shortest column
+  const placed = new Set(colGroups.flat());
+  allColIds.forEach(id => {
+    if (!placed.has(id)) {
+      const shortest = colGroups.reduce((a, b) => a.length <= b.length ? a : b);
+      shortest.push(id);
+    }
   });
 
-  // "+ New Project" button goes at the bottom of whichever column is shorter
+  // Create board-column elements
+  const boardColEls = colGroups.map((ids, i) => {
+    const el = document.createElement('div');
+    el.className = 'board-column';
+    el.dataset.colIdx = i;
+    ids.forEach(id => {
+      if (columnBuilders[id]) el.appendChild(columnBuilders[id]());
+    });
+    return el;
+  });
+
+  // "+ New Project" goes at bottom of the shortest column
   if (apiOnline) {
     const addCard = document.createElement('div');
     addCard.className = 'add-column-card';
     addCard.innerHTML = '<button class="add-category-btn" onclick="openAddCategory()">+ New Project</button>';
-    const target = leftCol.children.length <= rightCol.children.length ? leftCol : rightCol;
-    target.appendChild(addCard);
+    const shortest = boardColEls.reduce((a, b) => a.children.length <= b.children.length ? a : b);
+    shortest.appendChild(addCard);
   }
 
-  board.appendChild(leftCol);
-  board.appendChild(rightCol);
+  boardColEls.forEach(el => board.appendChild(el));
 
   initTaskSortables(categories);
   initColumnSortable();
@@ -710,11 +712,11 @@ function initTaskSortables(categories = []) {
   });
 }
 
-// --- Drag and drop: reorder panels between left/right columns ---
-let leftSortable = null, rightSortable = null;
+// --- Drag and drop: reorder panels between board columns ---
+let colSortables = [];
 function initColumnSortable() {
-  if (leftSortable) leftSortable.destroy();
-  if (rightSortable) rightSortable.destroy();
+  colSortables.forEach(s => s.destroy());
+  colSortables = [];
 
   const opts = {
     group: 'panels',
@@ -727,10 +729,9 @@ function initColumnSortable() {
     onEnd: () => saveColumnOrder(),
   };
 
-  const leftEl = document.getElementById('board-left');
-  const rightEl = document.getElementById('board-right');
-  if (leftEl) leftSortable = new Sortable(leftEl, opts);
-  if (rightEl) rightSortable = new Sortable(rightEl, opts);
+  document.querySelectorAll('.board-column').forEach(el => {
+    colSortables.push(new Sortable(el, opts));
+  });
 }
 
 async function saveOrder() {
@@ -764,15 +765,16 @@ async function saveOrder() {
 
 async function saveColumnOrder() {
   if (!apiOnline) return;
-  // Read left/right column assignments from the DOM
-  const leftIds = [...document.querySelectorAll('#board-left .column')].map(c => c.dataset.colId);
-  const rightIds = [...document.querySelectorAll('#board-right .column')].map(c => c.dataset.colId);
+  // Read column assignments from the DOM — array of arrays
+  const order = [...document.querySelectorAll('.board-column')].map(col =>
+    [...col.querySelectorAll('.column')].map(c => c.dataset.colId)
+  );
 
   try {
     await apiFetch('/api/column-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order: { left: leftIds, right: rightIds } }),
+      body: JSON.stringify({ order }),
     });
     showToast('Layout saved');
   } catch (e) {
