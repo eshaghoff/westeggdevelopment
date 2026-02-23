@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_scored": "2026-02-23T14:00:22",
+  "last_scored": "2026-02-23T14:30:19",
   "todos": [
     {
       "title": "parking location scenarios",
@@ -150,21 +150,6 @@
       "urgency": 5.2,
       "importance": 5.2,
       "ai_summary": "Market expansion discussion - strategic growth opportunity",
-      "snoozed": false
-    },
-    {
-      "title": "Give cell numbers, send late notices, produce manager's report on who hasn't paid",
-      "due": "",
-      "id": "6c638b7f",
-      "description": "",
-      "life_area": "work",
-      "category": "general",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-16T17:26:01",
-      "urgency": 4.8,
-      "importance": 4.8,
-      "ai_summary": null,
       "snoozed": false
     },
     {
