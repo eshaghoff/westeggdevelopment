@@ -3,6 +3,36 @@
   "last_scored": "2026-02-23T17:30:21",
   "todos": [
     {
+      "title": "Rear yards on irregular lots",
+      "due": "",
+      "id": "be13352c",
+      "description": "",
+      "life_area": "work",
+      "category": "Massing App",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-23T17:36:02",
+      "urgency": null,
+      "importance": null,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
+      "title": "Split zoning lot into two",
+      "due": "",
+      "id": "7210e5fe",
+      "description": "",
+      "life_area": "work",
+      "category": "Massing App",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-23T17:35:31",
+      "urgency": null,
+      "importance": null,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
       "title": "Corner spot lease and cash",
       "due": "",
       "id": "e76aabcc",
