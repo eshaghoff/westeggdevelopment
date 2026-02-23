@@ -570,6 +570,12 @@
       "id": "cat_cc480c",
       "color": "#e74c3c",
       "order": 1
+    },
+    {
+      "name": "Massing App",
+      "id": "cat_bc039a",
+      "color": "#1abc9c",
+      "order": 2
     }
   ],
   "column_order": {
@@ -579,7 +585,8 @@
     ],
     "right": [
       "cat-cat_cc480c",
-      "cat-cat_80eb20"
+      "cat-cat_80eb20",
+      "cat-cat_bc039a"
     ]
   }
 }
