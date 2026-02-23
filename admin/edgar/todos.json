@@ -3,6 +3,21 @@
   "last_scored": "2026-02-23T00:00:22",
   "todos": [
     {
+      "title": "Call Eli Guttman for getting new abatement on Cornejo Corona building",
+      "due": "",
+      "id": "b644d52f",
+      "description": "",
+      "life_area": "work",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-23T00:17:43",
+      "urgency": null,
+      "importance": null,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
       "title": "The Real Deal: launch it, own it, let them talk about it (Hannah job, future byline)",
       "due": "",
       "id": "cd863061",
@@ -333,21 +348,6 @@
       "snoozed": false
     },
     {
-      "title": "Call Spectrum to improve internet connection",
-      "due": "",
-      "id": "4946fc81",
-      "description": "",
-      "life_area": "personal",
-      "category": "general",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-10T22:25:23",
-      "urgency": 5.6,
-      "importance": 5.6,
-      "ai_summary": "Home internet troubleshooting - moderate personal task",
-      "snoozed": false
-    },
-    {
       "title": "Solas steak",
       "due": "",
       "id": "344fde7c",
@@ -390,21 +390,6 @@
       "urgency": 2.2,
       "importance": 2.2,
       "ai_summary": "Personal parking logistics, likely near-term need",
-      "snoozed": false
-    },
-    {
-      "title": "Pick up dry cleaning",
-      "due": "",
-      "id": "38f756bd",
-      "description": "",
-      "life_area": "personal",
-      "category": "general",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-22T00:18:36",
-      "urgency": 1.1,
-      "importance": 1.1,
-      "ai_summary": null,
       "snoozed": false
     },
     {
