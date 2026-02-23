@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_scored": "2026-02-23T00:00:22",
+  "last_scored": "2026-02-23T00:30:18",
   "todos": [
     {
       "title": "Corner spot lease and cash",
@@ -30,6 +30,21 @@
       "urgency": null,
       "importance": null,
       "ai_summary": null,
+      "snoozed": false
+    },
+    {
+      "title": "List Pickwood Ln house",
+      "due": "",
+      "id": "019aa979",
+      "description": "",
+      "life_area": "work",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-10T17:19:29",
+      "urgency": 7.6,
+      "importance": 7.6,
+      "ai_summary": "Core revenue activity; listing generates deals and commissions",
       "snoozed": false
     },
     {
@@ -89,51 +104,6 @@
       "created": "2026-02-16T00:19:44",
       "urgency": 8.6,
       "importance": 8.6,
-      "ai_summary": null,
-      "snoozed": false
-    },
-    {
-      "title": "Respond to Taun Toay",
-      "due": "",
-      "id": "1e299d8b",
-      "description": "",
-      "life_area": "work",
-      "category": "general",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-16T00:12:52",
-      "urgency": 8.1,
-      "importance": 8.1,
-      "ai_summary": null,
-      "snoozed": false
-    },
-    {
-      "title": "List Pickwood Ln house",
-      "due": "",
-      "id": "019aa979",
-      "description": "",
-      "life_area": "work",
-      "category": "general",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-10T17:19:29",
-      "urgency": 7.6,
-      "importance": 7.6,
-      "ai_summary": "Core revenue activity; listing generates deals and commissions",
-      "snoozed": false
-    },
-    {
-      "title": "Jordan Preston pro forma",
-      "due": "",
-      "id": "eb42fa53",
-      "description": "",
-      "life_area": "work",
-      "category": "general",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-16T00:19:49",
-      "urgency": 7.1,
-      "importance": 7.1,
       "ai_summary": null,
       "snoozed": false
     },
@@ -213,21 +183,6 @@
       "snoozed": false
     },
     {
-      "title": "Speak to R&B about Parviz birthday, grand opening, roof furniture, roof kitchen",
-      "due": "",
-      "id": "1343163b",
-      "description": "",
-      "life_area": "work",
-      "category": "general",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-18T01:10:35",
-      "urgency": 2.4,
-      "importance": 2.4,
-      "ai_summary": null,
-      "snoozed": false
-    },
-    {
       "title": "Use Parviz $125K to buy out Jackob",
       "due": "",
       "id": "e5a0e7dd",
@@ -254,6 +209,36 @@
       "created": "2026-02-22T10:35:04",
       "urgency": 0.5,
       "importance": 0.5,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
+      "title": "Jordan Preston pro forma",
+      "due": "",
+      "id": "eb42fa53",
+      "description": "",
+      "life_area": "work",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-16T00:19:49",
+      "urgency": 7.1,
+      "importance": 7.1,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
+      "title": "Respond to Taun Toay",
+      "due": "",
+      "id": "1e299d8b",
+      "description": "",
+      "life_area": "work",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-16T00:12:52",
+      "urgency": 8.1,
+      "importance": 8.1,
       "ai_summary": null,
       "snoozed": false
     },
@@ -468,6 +453,21 @@
       "snoozed": false
     },
     {
+      "title": "Speak to R&B about Parviz birthday, grand opening, roof furniture, roof kitchen",
+      "due": "",
+      "id": "1343163b",
+      "description": "",
+      "life_area": "work",
+      "category": "Northern Blvd",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-18T01:10:35",
+      "urgency": 2.4,
+      "importance": 2.4,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
       "title": "Order roof furniture via Benny Y",
       "due": "",
       "id": "fe4879d1",
@@ -513,21 +513,6 @@
       "snoozed": false
     },
     {
-      "title": "Order gym TV",
-      "due": "",
-      "id": "b2f218c1",
-      "description": "",
-      "life_area": "personal",
-      "category": "Northern Blvd",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-22T17:07:36",
-      "urgency": 2.5,
-      "importance": 2.5,
-      "ai_summary": null,
-      "snoozed": false
-    },
-    {
       "title": "Solomon insurance",
       "due": "",
       "id": "63df29e2",
@@ -539,6 +524,21 @@
       "created": "2026-02-18T10:24:05",
       "urgency": 1.4,
       "importance": 1.4,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
+      "title": "Order gym TV",
+      "due": "",
+      "id": "b2f218c1",
+      "description": "",
+      "life_area": "personal",
+      "category": "Northern Blvd",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-22T17:07:36",
+      "urgency": 2.5,
+      "importance": 2.5,
       "ai_summary": null,
       "snoozed": false
     }
@@ -559,12 +559,12 @@
   ],
   "column_order": {
     "left": [
-      "work"
+      "work",
+      "personal"
     ],
     "right": [
       "cat-cat_cc480c",
-      "cat-cat_80eb20",
-      "personal"
+      "cat-cat_80eb20"
     ]
   }
 }
