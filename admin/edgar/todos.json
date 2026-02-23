@@ -1,7 +1,22 @@
 {
   "version": 1,
-  "last_scored": "2026-02-23T01:30:18",
+  "last_scored": "2026-02-23T02:00:21",
   "todos": [
+    {
+      "title": "parking location scenarios",
+      "due": "",
+      "id": "2bda5b4f",
+      "description": "",
+      "life_area": "work",
+      "category": "Massing App",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-23T01:57:27",
+      "urgency": null,
+      "importance": null,
+      "ai_summary": null,
+      "snoozed": false
+    },
     {
       "title": "Corner spot lease and cash",
       "due": "",
