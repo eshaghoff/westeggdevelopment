@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_scored": "2026-02-23T00:30:18",
+  "last_scored": "2026-02-23T01:00:29",
   "todos": [
     {
       "title": "Corner spot lease and cash",
@@ -393,17 +393,17 @@
       "snoozed": false
     },
     {
-      "title": "Northern lobby bench",
+      "title": "Chris Evans sign lease extension",
       "due": "",
-      "id": "97926470",
+      "id": "b424f7e6",
       "description": "",
       "life_area": "work",
       "category": "OCL Red Hook",
       "tags": [],
       "done": false,
-      "created": "2026-02-16T00:19:54",
-      "urgency": 6.7,
-      "importance": 6.7,
+      "created": "2026-02-23T01:00:38",
+      "urgency": null,
+      "importance": null,
       "ai_summary": null,
       "snoozed": false
     },
@@ -479,6 +479,21 @@
       "created": "2026-02-22T17:08:50",
       "urgency": 10.0,
       "importance": 10.0,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
+      "title": "Northern lobby bench",
+      "due": "",
+      "id": "97926470",
+      "description": "",
+      "life_area": "work",
+      "category": "Northern Blvd",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-16T00:19:54",
+      "urgency": 6.7,
+      "importance": 6.7,
       "ai_summary": null,
       "snoozed": false
     },
