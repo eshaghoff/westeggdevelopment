@@ -3,6 +3,21 @@
   "last_scored": "2026-02-23T00:00:22",
   "todos": [
     {
+      "title": "Corner spot lease and cash",
+      "due": "",
+      "id": "e76aabcc",
+      "description": "",
+      "life_area": "work",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-18T00:43:47",
+      "urgency": 3.3,
+      "importance": 3.3,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
       "title": "Call Eli Guttman for getting new abatement on Cornejo Corona building",
       "due": "",
       "id": "b644d52f",
@@ -198,21 +213,6 @@
       "snoozed": false
     },
     {
-      "title": "Corner spot lease and cash",
-      "due": "",
-      "id": "e76aabcc",
-      "description": "",
-      "life_area": "work",
-      "category": "general",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-18T00:43:47",
-      "urgency": 3.3,
-      "importance": 3.3,
-      "ai_summary": null,
-      "snoozed": false
-    },
-    {
       "title": "Speak to R&B about Parviz birthday, grand opening, roof furniture, roof kitchen",
       "due": "",
       "id": "1343163b",
@@ -243,36 +243,6 @@
       "snoozed": false
     },
     {
-      "title": "Solomon insurance",
-      "due": "",
-      "id": "63df29e2",
-      "description": "",
-      "life_area": "work",
-      "category": "general",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-18T10:24:05",
-      "urgency": 1.4,
-      "importance": 1.4,
-      "ai_summary": null,
-      "snoozed": false
-    },
-    {
-      "title": "Get Kohler mixer",
-      "due": "",
-      "id": "6f0a9278",
-      "description": "",
-      "life_area": "work",
-      "category": "general",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-18T13:43:56",
-      "urgency": 1.0,
-      "importance": 1.0,
-      "ai_summary": null,
-      "snoozed": false
-    },
-    {
       "title": "West Egg should have an ig post for the heat map",
       "due": "",
       "id": "d219c63d",
@@ -292,7 +262,7 @@
       "due": "",
       "id": "92356acb",
       "description": "",
-      "life_area": "work",
+      "life_area": "personal",
       "category": "general",
       "tags": [],
       "done": false,
@@ -408,6 +378,21 @@
       "snoozed": false
     },
     {
+      "title": "Check on Camy",
+      "due": "",
+      "id": "12a7a853",
+      "description": "",
+      "life_area": "personal",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-22T17:56:00",
+      "urgency": null,
+      "importance": null,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
       "title": "Garlinghouse loan, Mazzuca loan",
       "due": "",
       "id": "ef0c90c3",
@@ -488,7 +473,7 @@
       "id": "fe4879d1",
       "description": "",
       "life_area": "work",
-      "category": "Northern Boulevard",
+      "category": "Northern Blvd",
       "tags": [],
       "done": false,
       "created": "2026-02-22T17:08:50",
@@ -498,27 +483,12 @@
       "snoozed": false
     },
     {
-      "title": "Northern Blvd price out insurance",
-      "due": "",
-      "id": "a537f345",
-      "description": "",
-      "life_area": "work",
-      "category": "Northern Boulevard",
-      "tags": [],
-      "done": false,
-      "created": "2026-02-10T17:19:47",
-      "urgency": 7.5,
-      "importance": 7.5,
-      "ai_summary": "Property insurance pricing - critical for asset protection",
-      "snoozed": false
-    },
-    {
       "title": "Order outdoor kitchen and BBQ",
       "due": "",
       "id": "780c6184",
       "description": "",
       "life_area": "work",
-      "category": "Northern Boulevard",
+      "category": "Northern Blvd",
       "tags": [],
       "done": false,
       "created": "2026-02-22T17:07:04",
@@ -528,12 +498,27 @@
       "snoozed": false
     },
     {
+      "title": "Northern Blvd price out insurance",
+      "due": "",
+      "id": "a537f345",
+      "description": "",
+      "life_area": "work",
+      "category": "Northern Blvd",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-10T17:19:47",
+      "urgency": 7.5,
+      "importance": 7.5,
+      "ai_summary": "Property insurance pricing - critical for asset protection",
+      "snoozed": false
+    },
+    {
       "title": "Order gym TV",
       "due": "",
       "id": "b2f218c1",
       "description": "",
       "life_area": "personal",
-      "category": "Northern Boulevard",
+      "category": "Northern Blvd",
       "tags": [],
       "done": false,
       "created": "2026-02-22T17:07:36",
@@ -543,19 +528,43 @@
       "snoozed": false
     },
     {
-      "title": "Check on Camy",
+      "title": "Solomon insurance",
       "due": "",
-      "id": "12a7a853",
+      "id": "63df29e2",
       "description": "",
-      "life_area": "personal",
-      "category": "general",
+      "life_area": "work",
+      "category": "Northern Blvd",
       "tags": [],
       "done": false,
-      "created": "2026-02-22T17:56:00",
-      "urgency": null,
-      "importance": null,
+      "created": "2026-02-18T10:24:05",
+      "urgency": 1.4,
+      "importance": 1.4,
       "ai_summary": null,
       "snoozed": false
     }
-  ]
+  ],
+  "categories": [
+    {
+      "name": "Northern Blvd",
+      "id": "cat_80eb20",
+      "color": "#e8b931",
+      "order": 0
+    },
+    {
+      "name": "OCL Red Hook",
+      "id": "cat_cc480c",
+      "color": "#e74c3c",
+      "order": 1
+    }
+  ],
+  "column_order": {
+    "left": [
+      "work"
+    ],
+    "right": [
+      "cat-cat_cc480c",
+      "cat-cat_80eb20",
+      "personal"
+    ]
+  }
 }
