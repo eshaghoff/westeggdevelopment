@@ -581,10 +581,11 @@
   "column_order": {
     "left": [
       "work",
-      "personal"
+      "personal",
+      "cat-cat_cc480c"
     ],
     "right": [
-      "cat-cat_cc480c",
+      "work",
       "cat-cat_80eb20",
       "cat-cat_bc039a"
     ]
