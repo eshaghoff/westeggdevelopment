@@ -3,6 +3,21 @@
   "last_scored": "2026-02-24T11:00:20",
   "todos": [
     {
+      "title": "Watch Inconvenient Study",
+      "due": "",
+      "id": "c8085aff",
+      "description": "",
+      "life_area": "personal",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-24T11:02:47",
+      "urgency": null,
+      "importance": null,
+      "ai_summary": null,
+      "snoozed": false
+    },
+    {
       "title": "Real Deal follow up on map",
       "due": "",
       "id": "5fb97a2e",
@@ -285,6 +300,21 @@
       "urgency": 6.7,
       "importance": 6.7,
       "ai_summary": "Personal dinner plans - moderate social priority",
+      "snoozed": false
+    },
+    {
+      "title": "Cut rug mat/move rug",
+      "due": "",
+      "id": "a7202e69",
+      "description": "",
+      "life_area": "personal",
+      "category": "general",
+      "tags": [],
+      "done": false,
+      "created": "2026-02-24T11:02:29",
+      "urgency": null,
+      "importance": null,
+      "ai_summary": null,
       "snoozed": false
     },
     {
